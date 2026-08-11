@@ -1,0 +1,1621 @@
+{
+  "weeks": [
+    {
+      "semester": "s1",
+      "week": 1,
+      "concepts": [
+        "c1"
+      ],
+      "focus": "Intro to classes & objects: fields, constructors, instance methods.",
+      "slides": [
+        {
+          "title": "Week 1",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1smB7DYBhoxIIz9fb3cUOPCT725spJlByC7HVtVAG93g/edit?slide=id.p#slide=id.p",
+          "semester": null,
+          "week": 1,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [],
+      "news": [
+        {
+          "title": "Week 1: CS in the News: Net-Zero",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 1,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 2,
+      "concepts": [
+        "c1"
+      ],
+      "focus": "Building objects with state \u2014 the BodyOfWater class.",
+      "slides": [
+        {
+          "title": "Week 2",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1nvi8e7oN0YEY-9SMrXrNCT8bHsKhF8C4wes9lfvDP2M/edit?slide=id.g2812d6e0e0b_0_296#slide=id.g2812d6e0e0b_0_296",
+          "semester": null,
+          "week": 2,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "HW #1: Week 2: BodyOfWater",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 2,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 2: Quiz #1: Classes and Objects",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 2,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Quiz/Test"
+        }
+      ],
+      "news": []
+    },
+    {
+      "semester": "s1",
+      "week": 3,
+      "concepts": [
+        "c1"
+      ],
+      "focus": "More classes & objects practice; Quiz #2.",
+      "slides": [
+        {
+          "title": "Week 3",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1LvYRHnM66h0StIzEU4clP9z4UVqTqwqrExZ352R33M4/edit?slide=id.p#slide=id.p",
+          "semester": null,
+          "week": 3,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "HW #2: Week 3: Classes and Objects",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 3,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 3:  Quiz #2: Classes and Objects",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 3,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Quiz/Test"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 3: CS in the News: 21 Ways People are Using AI at Work",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 3,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 4,
+      "concepts": [
+        "c1",
+        "c2"
+      ],
+      "focus": "Wrapping up classes & objects; strings begin.",
+      "slides": [
+        {
+          "title": "Week 4",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1_OZBNueihlZzrxMyc-rx2mytx8cJDLhWXweUfBUXkXg/edit?slide=id.g10331709a_05#slide=id.g10331709a_05",
+          "semester": null,
+          "week": 4,
+          "concept": "c2",
+          "conceptTitle": "Concept 2: Strings",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "HW #3: Week 4: Concept #1: Classes: Complex State",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 4,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 4:  Quiz #3: Classes and Objects",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 4,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Quiz/Test"
+        },
+        {
+          "title": "Week 4: CS in the News: LLMs in the Classroom",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 4,
+          "concept": "c2",
+          "conceptTitle": "Concept 2: Strings",
+          "section": "Assessments"
+        }
+      ],
+      "news": []
+    },
+    {
+      "semester": "s1",
+      "week": 5,
+      "concepts": [
+        "c1",
+        "c2"
+      ],
+      "focus": "Concept #1 Test. String methods & analysis start.",
+      "slides": [
+        {
+          "title": "Week 5",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/14DzAQDsxIZ7pF3s_PSmcfMaRzoaC1GOITUu7UtLPo7M/edit?slide=id.gebc9a55e40_0_290#slide=id.gebc9a55e40_0_290",
+          "semester": null,
+          "week": 5,
+          "concept": "c2",
+          "conceptTitle": "Concept 2: Strings",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 5: Concept #1: Test",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 5,
+          "concept": "c1",
+          "conceptTitle": "Concept 1: Classes & Objects",
+          "section": "Quiz/Test"
+        },
+        {
+          "title": "Week 5: CS in the News: LLMs and Delusional Thinking",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 5,
+          "concept": "c2",
+          "conceptTitle": "Concept 2: Strings",
+          "section": "Assessments"
+        }
+      ],
+      "news": []
+    },
+    {
+      "semester": "s1",
+      "week": 6,
+      "concepts": [
+        "c2",
+        "c3"
+      ],
+      "focus": "Strings continue; conditionals (if/else, booleans) begin.",
+      "slides": [
+        {
+          "title": "Week 6",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1ItwkmMcELeqppwoqEb-rgGWl-SzU11DszmnQfYa2Ljw/edit?slide=id.g15a9371f9c9_0_11#slide=id.g15a9371f9c9_0_11",
+          "semester": null,
+          "week": 6,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "HW #1: Week 6: Strings Analysis",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 6,
+          "concept": "c2",
+          "conceptTitle": "Concept 2: Strings",
+          "section": "Assessments"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 6: CS in the News: LLMs: How do they Work?",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 6,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 7,
+      "concepts": [
+        "c2",
+        "c3"
+      ],
+      "focus": "String creation practice; conditionals continue.",
+      "slides": [
+        {
+          "title": "Week 7",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1jObVSyGDnNpCW849899ukRe8lF-H70sAASEWU1Iplr8/edit?slide=id.g15c331b3536_1_131#slide=id.g15c331b3536_1_131",
+          "semester": null,
+          "week": 7,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "HW #2: Week 7: Strings",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 7,
+          "concept": "c2",
+          "conceptTitle": "Concept 2: Strings",
+          "section": "Assessments"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 7: CS in the News: LLMs: Copyrightable Data",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 7,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 8,
+      "concepts": [
+        "c2",
+        "c3"
+      ],
+      "focus": "Concept #2 Test. Conditionals: the Virtual Pet project.",
+      "slides": [
+        {
+          "title": "Week 8",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1O-s9GHT1_1vz9TkGdK8iqdRnkyTzM1GDHvX-RFe1Wes/edit?slide=id.p#slide=id.p",
+          "semester": null,
+          "week": 8,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 8: Virtual Pet",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 8,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 8: Concept #2: Test",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 8,
+          "concept": "c2",
+          "conceptTitle": "Concept 2: Strings",
+          "section": "Assessments"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 8: CS in the News: LLMs: Economic Bubble?",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 8,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 9,
+      "concepts": [
+        "c3"
+      ],
+      "focus": "Conditionals continue \u2014 Quiz #1.",
+      "slides": [
+        {
+          "title": "Week 9",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1a-k_nuSxH3eVwv5qPXx_mNcaCisRmQD4-A4xHpts-fg/edit?slide=id.g2f9610804b5_18_200#slide=id.g2f9610804b5_18_200",
+          "semester": null,
+          "week": 9,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 9: HW #1: Conditionals",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 9,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 9: Quiz #1: Conditionals",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 9,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Quizzes"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 9: CS in the News LLMs: Neural Networks (Video)",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 9,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 10,
+      "concepts": [
+        "c3"
+      ],
+      "focus": "Conditionals continue \u2014 Quiz #2.",
+      "slides": [
+        {
+          "title": "Week 10",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1Cusc1D8dtEn6AVF3K9J8N-7OkgOp9LcEzJR6UhfEEMc/edit?slide=id.g9ec707b2ae_1_0#slide=id.g9ec707b2ae_1_0",
+          "semester": null,
+          "week": 10,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 10: HW #2: Conditionals",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 10,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 10: Quiz #2: Conditionals",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 10,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Quizzes"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 10: CS in the News: Robots Rights?",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 10,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 11,
+      "concepts": [
+        "c3"
+      ],
+      "focus": "Conditionals wrap-up \u2014 Quiz #3, XEyes case study.",
+      "slides": [
+        {
+          "title": "Week 11",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/16515a0hce1xmNZ2q89eWXV_bMXTr5WCLg1fby-ZXKzo/edit?slide=id.g16c99045131_1_1#slide=id.g16c99045131_1_1",
+          "semester": null,
+          "week": 11,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 11: HW #3: Conditionals",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 11,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Homework"
+        },
+        {
+          "title": "Week 11: XEyes Case Study",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 11,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 11: Quiz #3: Conditionals",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 11,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Quizzes"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 11: CS in the News: AI Slop is Destroying the Internet",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 11,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 12,
+      "concepts": [
+        "c3",
+        "c4"
+      ],
+      "focus": "Concept #3 Test. Iteration (loops) begins.",
+      "slides": [
+        {
+          "title": "Week 12",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/13cRp2Vx8EdnP7XQ14BnAi_ESa0Bzi2N44PK2pSp1CDk/edit?slide=id.g71d42906c_0_1#slide=id.g71d42906c_0_1",
+          "semester": null,
+          "week": 12,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 12: Concept #3: Conditionals Test",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 12,
+          "concept": "c3",
+          "conceptTitle": "Concept 3: Conditionals",
+          "section": "Quizzes"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 12: CS in the News: Algorithms Shaping Our World",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 12,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 13,
+      "concepts": [
+        "c4"
+      ],
+      "focus": "Iteration continues \u2014 HW #1, Quiz #1.",
+      "slides": [
+        {
+          "title": "Week 13",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1GKvpACfnBpnLWgtIbZzcQN3LSdPHLQgYRz8ZDqXKwgg/edit?slide=id.gfd94511664_0_0#slide=id.gfd94511664_0_0",
+          "semester": null,
+          "week": 13,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 13: Concept #4: Iteration: HW #1",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 13,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 13: Concept #4: Quiz #1",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 13,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Quiz/Tests"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 13: CS in the News: The Oldest Lie on the Internet",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 13,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 14,
+      "concepts": [
+        "c4"
+      ],
+      "focus": "Iteration continues \u2014 HW #2, Quiz #2.",
+      "slides": [
+        {
+          "title": "Week 14",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1pd5aMyYAEJyotLjz1vP3alZLWFn9PfYSAVESwWVcngA/edit?slide=id.gad5fada3be_0_67#slide=id.gad5fada3be_0_67",
+          "semester": null,
+          "week": 14,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 14: Concept #4: Iteration: HW #2",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 14,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 14: Concept #4: Quiz #2",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 14,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Quiz/Tests"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 14: CS in the News: Humanities Final Invention",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 14,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 15,
+      "concepts": [
+        "c4",
+        "c5"
+      ],
+      "focus": "Iteration wraps \u2014 Quiz #3. ArrayLists preview begins.",
+      "slides": [
+        {
+          "title": "Week 15",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1dQJ9hUnEiq7ED2wO8ohCZgIYtzCOePzkJNXpvcvkj9Q/edit?slide=id.g2b94689a2d_0_16#slide=id.g2b94689a2d_0_16",
+          "semester": null,
+          "week": 15,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Slides"
+        },
+        {
+          "title": "S1: Week 15",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1dQJ9hUnEiq7ED2wO8ohCZgIYtzCOePzkJNXpvcvkj9Q/edit#slide=id.p",
+          "semester": "s1",
+          "week": 15,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 15: Concept #4: Iteration: HW #3",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 15,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 15: Concept #4: Quiz #3",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 15,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Quiz/Tests"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 15: CS in the News: With Spatial Intelligence, AI will understand the real world",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 15,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 16,
+      "concepts": [
+        "c4"
+      ],
+      "focus": "Concept #4 Test \u2014 loops.",
+      "slides": [
+        {
+          "title": "Week 16/17",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1rVSXFOl-CGZXaCTFOwGNRPIx9vv3AQNtNDMc0mxFiFQ/edit?slide=id.g1061792c322_0_60#slide=id.g1061792c322_0_60",
+          "semester": null,
+          "week": 16,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 16: Concept #4 Test",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 16,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "Quiz/Tests"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 16: Fei Fei - Podcast on World Models and the AI effects",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 16,
+          "concept": "c4",
+          "conceptTitle": "Concept 4: Iteration",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s1",
+      "week": 17,
+      "concepts": [],
+      "focus": "Semester 1 finals: on-computer final + final project.",
+      "slides": [],
+      "homework": [],
+      "assessments": [],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 1,
+      "concepts": [
+        "c5"
+      ],
+      "focus": "ArrayLists: storing and managing collections of objects.",
+      "slides": [
+        {
+          "title": "S2: Week 1",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1IKJ_2mQlEk_c0ixc6mg2Jr_bwGbQNiLIjQt4RBLyv94/edit#slide=id.g6e6770a07f_0_195",
+          "semester": "s2",
+          "week": 1,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 1: Concept #5: ArrayLists: HW #1",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 1,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 2,
+      "concepts": [
+        "c5"
+      ],
+      "focus": "ArrayLists continue \u2014 HW #2.",
+      "slides": [
+        {
+          "title": "S2:  Week 2",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1h_E5YcXVF0YxIkJU2Wm70RNrrIlyn5v55ZNgsZVInlw/edit#slide=id.g265c38fb0f0_0_6",
+          "semester": "s2",
+          "week": 2,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 2: Concept #5: ArrayLists: HW #2",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 2,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 3,
+      "concepts": [
+        "c5"
+      ],
+      "focus": "ArrayLists continue \u2014 HW #3, Quiz #1.",
+      "slides": [
+        {
+          "title": "S2: Week 3",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1WlMS9gvxLaE5ggskMlS8_9UY-HdhHKjftbV-WnyCe6o/edit#slide=id.g33180def49_0_89",
+          "semester": "s2",
+          "week": 3,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Slides"
+        },
+        {
+          "title": "S2: Week3",
+          "type": "WikiPage",
+          "url": null,
+          "semester": "s2",
+          "week": 3,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 3: Concept #5: ArrayLists: HW #3",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 3,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": [
+        {
+          "title": "S2: Week 3: CS in the News: AI and Eithics",
+          "type": "Assignment",
+          "url": null,
+          "semester": "s2",
+          "week": 3,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s2",
+      "week": 4,
+      "concepts": [
+        "c5"
+      ],
+      "focus": "ArrayLists \u2014 Sound Project, Quiz #2.",
+      "slides": [
+        {
+          "title": "S2: Week 4",
+          "type": "WikiPage",
+          "url": null,
+          "semester": "s2",
+          "week": 4,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 4: Concept #5: Sound Project",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 4,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": [
+        {
+          "title": "S2: Week 4: CS in the News: AI and Ethics #2",
+          "type": "Assignment",
+          "url": null,
+          "semester": "s2",
+          "week": 4,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s2",
+      "week": 5,
+      "concepts": [
+        "c5",
+        "c6"
+      ],
+      "focus": "Concept #5 Test. Arrays (fixed-size) begin.",
+      "slides": [
+        {
+          "title": "Week 5",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1nGIc7n_nXjQp8t2IXoAmWCmaSYmp1v3PNY6zBnzJt1U/edit#slide=id.g296174bdc_068",
+          "semester": null,
+          "week": 5,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 5: Concept #5: ArrayLists: HW #5",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 5,
+          "concept": "c5",
+          "conceptTitle": "Concept 5: ArrayLists",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": [
+        {
+          "title": "Week 5: CS in the News: AI and Ethics #3",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 5,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s2",
+      "week": 6,
+      "concepts": [
+        "c6"
+      ],
+      "focus": "Arrays continue \u2014 HW #1, Quiz #1.",
+      "slides": [
+        {
+          "title": "Week 6",
+          "type": "WikiPage",
+          "url": null,
+          "semester": null,
+          "week": 6,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 6: Concept #6: Arrays: HW #1",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 6,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": [
+        {
+          "title": "Week 6: CS in the News: AI and Ethics #4",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 6,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s2",
+      "week": 7,
+      "concepts": [
+        "c6"
+      ],
+      "focus": "Arrays continue \u2014 HW #2, sorting & binary search practice.",
+      "slides": [
+        {
+          "title": "Week 7",
+          "type": "WikiPage",
+          "url": null,
+          "semester": null,
+          "week": 7,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Slides"
+        },
+        {
+          "title": "Week 7: Practice: Sorting Problems",
+          "type": "WikiPage",
+          "url": null,
+          "semester": null,
+          "week": 7,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Slides"
+        },
+        {
+          "title": "Week 7: Practice: Binary Search",
+          "type": "WikiPage",
+          "url": null,
+          "semester": null,
+          "week": 7,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Slides"
+        },
+        {
+          "title": "Week 7: Practice: Exception Handling",
+          "type": "WikiPage",
+          "url": null,
+          "semester": null,
+          "week": 7,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 7: Concept #6: Arrays: HW #2",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 7,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": [
+        {
+          "title": "Week 7: CS in the News: AI Agents: OpenClaw",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 7,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s2",
+      "week": 8,
+      "concepts": [
+        "c6",
+        "c7"
+      ],
+      "focus": "Test: Arrays. 2D arrays begin.",
+      "slides": [
+        {
+          "title": "Week 8",
+          "type": "WikiPage",
+          "url": null,
+          "semester": null,
+          "week": 8,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 8: Concept #6: Arrays: HW #3",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 8,
+          "concept": "c6",
+          "conceptTitle": "Concept 6: Arrays",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": [
+        {
+          "title": "Week 8: CS in the News: OpenClaw Tech Stack",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 8,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s2",
+      "week": 9,
+      "concepts": [
+        "c7",
+        "c8"
+      ],
+      "focus": "2D arrays continue. Recursion introduced.",
+      "slides": [
+        {
+          "title": "Week 9/10",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1GNSpBo4nC2itsFkz1ZAmH5qcMH7enieOfnXGRB447Qc/edit?slide=id.g3324fefa0be_0_0#slide=id.g3324fefa0be_0_0",
+          "semester": null,
+          "week": 9,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Slides"
+        },
+        {
+          "title": "Week 9",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1PvcweTnjfDkn-QVe0ADsfDhrXaDQOO6zrToTTpanaNg/edit#slide=id.g118a575b5fc_13_0",
+          "semester": null,
+          "week": 9,
+          "concept": "c8",
+          "conceptTitle": "Concept 8: Recursion",
+          "section": "Slides"
+        }
+      ],
+      "homework": [
+        {
+          "title": "Week 9: 2D Array: Image",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 9,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 10,
+      "concepts": [
+        "c7"
+      ],
+      "focus": "2D arrays \u2014 Quiz #1 (2D Arrays/Exceptions).",
+      "slides": [],
+      "homework": [
+        {
+          "title": "Week 10: 2D Array: 3 Problems",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 10,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Homework"
+        }
+      ],
+      "assessments": [
+        {
+          "title": "Week 10: Quiz #1: 2D Arrays/Exceptions",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 10,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Assessments"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 10/11: CS in the News:  Coding after Coders",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 10,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s2",
+      "week": 11,
+      "concepts": [
+        "c7"
+      ],
+      "focus": "2D arrays \u2014 Quiz #2, small-models demo.",
+      "slides": [],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 11: Quiz #2: 2D Arrays",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 11,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Assessments"
+        }
+      ],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 12,
+      "concepts": [
+        "c7",
+        "c8"
+      ],
+      "focus": "2D arrays \u2014 binary search practice. Recursion resumes.",
+      "slides": [
+        {
+          "title": "Week 12",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1vUMYfweP7BtmMq8A1BWqDtCl9BhcPbyLFV5aBMj31v0/edit?slide=id.g20846f30ad4_0_41#slide=id.g20846f30ad4_0_41",
+          "semester": null,
+          "week": 12,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 13,
+      "concepts": [
+        "c7",
+        "c8",
+        "ap-review"
+      ],
+      "focus": "2D arrays Quiz #3. Recursion debugging. AP Review begins.",
+      "slides": [
+        {
+          "title": "Week 13",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1PvcweTnjfDkn-QVe0ADsfDhrXaDQOO6zrToTTpanaNg/edit?usp=sharing",
+          "semester": null,
+          "week": 13,
+          "concept": "c8",
+          "conceptTitle": "Concept 8: Recursion",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 13: Quiz #3: 2D Array",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 13,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Assessments"
+        },
+        {
+          "title": "Week 13: AP Classroom: FRQ: Methods and Control Structures",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 13,
+          "concept": "ap-review",
+          "conceptTitle": "AP Exam Review",
+          "section": "Reviews"
+        },
+        {
+          "title": "Week 13: AP Classroom: MC - Recursion",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 13,
+          "concept": "ap-review",
+          "conceptTitle": "AP Exam Review",
+          "section": "Reviews"
+        }
+      ],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 14,
+      "concepts": [
+        "c7",
+        "c8",
+        "ap-review"
+      ],
+      "focus": "2D Array concept test. Recursion HW #1. AP Review: FRQs.",
+      "slides": [
+        {
+          "title": "Week 14",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1qKGzZqkAC3wC6Hoe-SDQFYn1EJ8a8a7P4OMlP-5T8hE/edit?slide=id.g230f562d568_9_2#slide=id.g230f562d568_9_2",
+          "semester": null,
+          "week": 14,
+          "concept": "c8",
+          "conceptTitle": "Concept 8: Recursion",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 14: Concept Test: 2D Array",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 14,
+          "concept": "c7",
+          "conceptTitle": "Concept 7: 2D Arrays",
+          "section": "Assessments"
+        },
+        {
+          "title": "Week 14: HW #1: Concept #8",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 14,
+          "concept": "c8",
+          "conceptTitle": "Concept 8: Recursion",
+          "section": "Assessments"
+        },
+        {
+          "title": "Week 14: CS in the News: Coding in 2026",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 14,
+          "concept": "c8",
+          "conceptTitle": "Concept 8: Recursion",
+          "section": "Assessments"
+        },
+        {
+          "title": "Week 14: FRQ: 2D Arrays - 3 questions",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 14,
+          "concept": "ap-review",
+          "conceptTitle": "AP Exam Review",
+          "section": "Reviews"
+        },
+        {
+          "title": "Week 14: MC Review: 2D Arrays",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 14,
+          "concept": "ap-review",
+          "conceptTitle": "AP Exam Review",
+          "section": "Reviews"
+        }
+      ],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 15,
+      "concepts": [
+        "ap-review"
+      ],
+      "focus": "AP Review wraps. AP Computer Science A Exam.",
+      "slides": [
+        {
+          "title": "Week 15",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1c_H4NxGteLAnkUyVm6UVXy21ISD5AyMeq_TN9SH_gPE/edit?slide=id.g736c7ae588_0_46#slide=id.g736c7ae588_0_46",
+          "semester": null,
+          "week": 15,
+          "concept": "ap-review",
+          "conceptTitle": "AP Exam Review",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 15: AP Classroom: FRQ: Classes",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 15,
+          "concept": "ap-review",
+          "conceptTitle": "AP Exam Review",
+          "section": "Reviews"
+        },
+        {
+          "title": "Week 15: MC Review ArrayLists",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 15,
+          "concept": "ap-review",
+          "conceptTitle": "AP Exam Review",
+          "section": "Reviews"
+        }
+      ],
+      "news": [
+        {
+          "title": "Week 15: CS in the News: Artemis",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 15,
+          "concept": "ap-review",
+          "conceptTitle": "AP Exam Review",
+          "section": "CS in the News"
+        }
+      ]
+    },
+    {
+      "semester": "s2",
+      "week": 16,
+      "concepts": [
+        "c9"
+      ],
+      "focus": "Post-exam unit: data & regression, Data Project #1.",
+      "slides": [
+        {
+          "title": "Week 16",
+          "type": "ExternalUrl",
+          "url": "https://docs.google.com/presentation/d/1QvPw6GhxZ9McpCYJeuumMOYtjEox8jBTqIQ2LlyiYek/edit?slide=id.g120dc43d6d0_0_20#slide=id.g120dc43d6d0_0_20",
+          "semester": null,
+          "week": 16,
+          "concept": "c9",
+          "conceptTitle": "Concept 9: Data & Regression",
+          "section": "Slides"
+        }
+      ],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 16: CS in the News: AI and Pancreatic Cancer",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 16,
+          "concept": "c9",
+          "conceptTitle": "Concept 9: Data & Regression",
+          "section": "Assessments"
+        }
+      ],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 17,
+      "concepts": [
+        "c9"
+      ],
+      "focus": "Data & regression continues \u2014 Data Project #1b.",
+      "slides": [],
+      "homework": [],
+      "assessments": [],
+      "news": []
+    },
+    {
+      "semester": "s2",
+      "week": 18,
+      "concepts": [
+        "c9",
+        "final"
+      ],
+      "focus": "Data Project #2. Final: Connect-4.",
+      "slides": [],
+      "homework": [],
+      "assessments": [
+        {
+          "title": "Week 18: CS in the News: AI and Optimistic",
+          "type": "Assignment",
+          "url": null,
+          "semester": null,
+          "week": 18,
+          "concept": "c9",
+          "conceptTitle": "Concept 9: Data & Regression",
+          "section": "Assessments"
+        }
+      ],
+      "news": []
+    }
+  ]
+}

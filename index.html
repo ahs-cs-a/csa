@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AP CSA &middot; This Week</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="course-name">AP Computer Science A</span>
+        <span class="course-sub">2025&ndash;26</span>
+      </div>
+      <nav class="main-nav" aria-label="Main">
+        <a href="index.html" aria-current="page">This Week</a>
+        <a href="topics.html">By Topic</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <h1 class="page-title">Where we are</h1>
+    <p class="page-lede">Find this week's slides, homework, and what's due. Every unit links out to the full topic page if you want to look ahead or catch up.</p>
+
+    <div class="now-card" id="now-card"></div>
+
+    <div class="sem-toggle" role="group" aria-label="Choose semester">
+      <button data-sem-btn="s1" aria-pressed="false">Semester 1</button>
+      <button data-sem-btn="s2" aria-pressed="false">Semester 2</button>
+    </div>
+
+    <div class="week-table-wrap">
+      <table class="week-table">
+        <thead>
+          <tr>
+            <th style="width:110px;">Week</th>
+            <th style="width:170px;">Unit</th>
+            <th style="width:26%;">Focus</th>
+            <th style="width:26%;">Resources &amp; Due</th>
+            <th>CS in the News</th>
+          </tr>
+        </thead>
+        <tbody id="week-tbody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    Mock-up built from the Canvas export &middot; week assignments are a best-effort reconstruction &mdash; check against your gradebook/calendar before sharing with students.
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
