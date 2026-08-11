@@ -65,11 +65,12 @@ function renderWeekTable(semester) {
     const chips = w.concepts.length ? w.concepts.map(chip).join("") : '<span class="empty-cell">—</span>';
 
     const highlights = [];
+    if (w.assessments.length) highlights.push(...w.assessments.map((i) => ({ ...i, tag: "Due" })));
     if (w.slides.length) highlights.push(...w.slides.map((i) => ({ ...i, tag: "Slides" })));
     if (w.homework.length) highlights.push(...w.homework.map((i) => ({ ...i, tag: "HW" })));
-    if (w.assessments.length) highlights.push(...w.assessments.map((i) => ({ ...i, tag: "Due" })));
+    if (w.resources.length) highlights.push(...w.resources.map((i) => ({ ...i, tag: "Resource" })));
     const resourcesHtml = highlights.length
-      ? `<ul class="link-list">${highlights.slice(0, 4).map((i) => {
+      ? `<ul class="link-list">${highlights.slice(0, 6).map((i) => {
           const cleanTitle = i.title.replace(/^S[12]:\s*/i, "").replace(/^Week\s*\d+(\s*\/\s*\d+)?[:\s]*/i, "");
           const label = `<span class="item-tag">${i.tag}</span> ${cleanTitle || i.title}`;
           return i.url

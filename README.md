@@ -1,35 +1,38 @@
-# CSA course site — mockup
+# CSA course site
 
-Two static pages, no build step, no server needed — just open `index.html` in a browser.
+Two static pages, no server needed — just open `index.html` in a browser.
+Live at https://ahs-cs-a.github.io/csa/
 
-- **`index.html`** — "This Week" view. A clean table, one row per week, with the current week highlighted and a semester toggle (S1/S2). Meant to be the front door for students: what's happening now, what's due, what to read.
-- **`topics.html`** — "By Topic" view. Every unit (Concept #1–#9, AP Review, Final Moments) as a collapsible section with its Slides / Resources / Homework / Assessments / CS-in-the-News items — mirrors your Canvas module structure exactly. Good for review or catching up.
-- **`data.js`** — all course content, generated from your Canvas export (`~/Desktop/csa-2025-26-export`). This is the single source of truth both pages read from.
+- **`index.html`** — "This Week" view. A clean table, one row per week, with the current week highlighted and a semester toggle (S1/S2). The front door for students: what's happening now, what's due, what to read.
+- **`topics.html`** — "By Topic" view. Every unit (Concept #1–#9, AP Review, Final Moments, Course Information) as a collapsible section with its Slides / Resources / Homework / Due / CS-in-the-News items. Good for review or catching up.
+- **`content/`** — **this is what you edit.** Plain markdown: one file per week, plus a concepts list and a course-info page. See `content/README.md`.
+- **`data.js`** — generated from `content/` by `source/build_from_markdown.py`. Don't hand-edit this — it gets overwritten every time you publish.
 - **`styles.css`** / **`script.js`** — shared look and behavior (light/dark aware, collapsible sections, current-week logic).
 
-## What's real vs. reconstructed
+## Editing content
 
-Every item title, section grouping, and external link (Slides, GitHub Classroom, Google Docs) came straight from your Canvas `module_meta.xml` — nothing was invented. 172 items, 66 live links.
+Edit the markdown in `content/`, then from the repo root:
 
-What I had to **reconstruct**, because Canvas's own week labels weren't fully consistent (some said "S1"/"S2", most just said "Week N," a few said "Week 9/10"):
+```
+./publish.sh "what you changed"
+```
 
-- The **chronological order of units** — inferred from Canvas's module list order (which runs newest-first, so I reversed it): Classes & Objects → Strings → Conditionals → Iteration → ArrayLists → Arrays → 2D Arrays → Recursion → AP Review → Data & Regression → Final Moments.
-- **Which semester each "Week N" belongs to**, for modules that didn't say S1/S2 explicitly.
-- **Concept 5 (ArrayLists) spans the semester boundary** — S1 Week 15 through S2 Week 5 — since that's the one unit Canvas tagged explicitly and it lines up with the rest.
+That rebuilds `data.js` from `content/` and pushes it live. See `content/README.md` for the file format (it's short — one frontmatter block plus five optional bullet-list sections per week).
 
-**Double-check the week-by-week assignments against your actual pacing guide before handing this to students** — the reconstruction is my best read of the Canvas structure, not a copy of a verified calendar. They live in `source/build_weeks.py`, in the `S1` and `S2` lists near the top (each row is `(week, [concept ids], focus blurb)`).
+## Updating "what week is it"
 
-## To update
+```
+./set-week.sh s2 9
+```
 
-- **"What week is it?"** — edit the `CURRENT` constant at the very top of `script.js` (e.g. `{ semester: "s2", week: 9 }`). Everything else (highlighting, the "This Week" card, done/upcoming greying) follows from that one value. No rebuild needed for this one.
-- **Fix a week's unit/focus text, or which items show up** — edit `source/build_weeks.py` (the `S1`/`S2` lists), then from `source/` run:
-  ```
-  python3 build_data.py && python3 build_weeks.py && python3 build_data_js.py
-  ```
-  That re-parses `modules_raw.tsv` (the raw Canvas export) and rewrites `../data.js`.
-- **Add/edit an individual item's title or link** — you can also hand-edit `data.js` directly (it's just two JS arrays, `CONCEPTS` and `WEEKS`); just know a future rebuild from `source/` will overwrite those changes unless you also update `modules_raw.tsv` or the build scripts.
-- **Real dates instead of "Week N"** — not wired up yet. Easiest path: add a start-date to each semester and compute date ranges in `script.js`.
+Validates the week exists, updates `script.js`, commits, and publishes. Everything on the site (highlighting, the "This Week" card, done/upcoming greying) follows from that one value.
 
-## Not done yet (this is CSA only, per our conversation)
+## Where this content came from
 
-The other three exported courses aren't in here. Once this template feels right, the same `build_data.py`-style parsing + `data.js` shape can be reused for each.
+The starting content was migrated from a Canvas export (`~/Desktop/csa-2025-26-export`). `source/canvas-migration/` has that one-time script and the raw parse, kept for provenance — it's not part of the ongoing workflow and shouldn't be re-run (it would overwrite anything you've since edited in `content/`).
+
+Some week/semester assignments were reconstructed from Canvas's own (inconsistent) week labels — worth double-checking against your real pacing guide. About a dozen items with no confirmed week in Canvas (a few unit tests, the Data Projects, the AP Test) were **left out** rather than guessed at; add them to the relevant week file once you know the real date.
+
+## Not done yet
+
+The other three exported courses aren't in here — this was built CSA-first. Once this content model feels right, `source/build_from_markdown.py` and the `content/` shape can be reused as-is for each of the others (new repo, same two scripts, new `content/`).

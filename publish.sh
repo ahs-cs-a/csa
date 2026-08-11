@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Rebuild the site from source/ and publish.
-# Run this after editing source/build_weeks.py, source/build_data.py,
-# or source/modules_raw.tsv.
+# Rebuild the site from content/ and publish.
+# Run this after editing anything in content/ (weekly files, concepts.md,
+# course-info.md).
 #
 #   ./publish.sh "fixed the 2D arrays slide link"
 #
@@ -10,11 +10,7 @@ cd "$(dirname "$0")"
 
 MSG="${1:-Update course content}"
 
-cd source
-python3 build_data.py
-python3 build_weeks.py
-python3 build_data_js.py
-cd ..
+python3 source/build_from_markdown.py
 
 if git diff --quiet && git diff --cached --quiet; then
   echo "No changes to publish."
