@@ -2,7 +2,7 @@
 // Update this each week (or wire it up to a real date later). Everything
 // else on the site (highlighting, "This Week" card, done/upcoming state)
 // is derived from this one value.
-const CURRENT = { semester: "s1", week: 6 };
+const CURRENT = { semester: "s1", week: 1 };
 
 const SEM_LABEL = { s1: "Semester 1", s2: "Semester 2" };
 
