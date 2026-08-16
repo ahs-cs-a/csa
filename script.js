@@ -60,8 +60,7 @@ function renderWeekTable(semester) {
   tbody.innerHTML = rows.map((w) => {
     const status = weekStatus(w);
     const rowClass = status === "now" ? "row-now" : status === "past" ? "row-past" : "";
-    const badge = status === "now" ? '<span class="now-pill">This Week</span>'
-      : status === "past" ? '<span class="done-pill">Done</span>' : "";
+    const badge = status === "past" ? '<span class="done-pill">Done</span>' : "";
     const chips = w.concepts.length ? w.concepts.map(chip).join("") : '<span class="empty-cell">—</span>';
 
     const highlights = [];
