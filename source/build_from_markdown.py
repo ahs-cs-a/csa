@@ -69,6 +69,7 @@ def parse_week_file(path):
         "week": int(fm["week"]),
         "concepts": [c.strip() for c in fm.get("concepts", "").split(",") if c.strip()],
         "focus": fm.get("focus", ""),
+        "_current": fm.get("current", "").strip().lower() in ("true", "yes", "1"),
     }
     sections = re.split(r'^##\s+(.+?)\s*$', body, flags=re.M)
     # sections[0] is preamble (ignored); then alternating header, body, header, body...
@@ -105,6 +106,15 @@ def parse_course_info(path):
 week_files = sorted(glob.glob(os.path.join(CONTENT, "weeks", "*.md")))
 weeks = [parse_week_file(p) for p in week_files]
 weeks.sort(key=lambda w: (w["semester"], w["week"]))
+
+# ------------------------------------------------------------ build CURRENT
+# Set `current: true` in exactly one week file's frontmatter to mark it as
+# "now" — drives the row highlight, the now-card, and topic-page "Now" pills.
+current_weeks = [w for w in weeks if w.pop("_current")]
+if len(current_weeks) > 1:
+    names = ", ".join(f"{w['semester']} week {w['week']}" for w in current_weeks)
+    raise SystemExit(f"More than one week file has `current: true`: {names}. Only one is allowed.")
+CURRENT = {"semester": current_weeks[0]["semester"], "week": current_weeks[0]["week"]} if current_weeks else None
 
 # --------------------------------------------------------------- build CONCEPTS
 # (must happen before the due->assessments rename below, since it reads w["due"])
@@ -145,7 +155,9 @@ for w in weeks:
 
 # ------------------------------------------------------------------- write out
 with open(os.path.join(ROOT, "data.js"), "w") as f:
+    f.write("const CURRENT = " + json.dumps(CURRENT) + ";\n")
     f.write("const CONCEPTS = " + json.dumps(concepts) + ";\n")
     f.write("const WEEKS = " + json.dumps(weeks) + ";\n")
 
-print(f"wrote data.js from {len(weeks)} week files and {len(concepts)} concepts")
+current_desc = f"{CURRENT['semester']} week {CURRENT['week']}" if CURRENT else "none set"
+print(f"wrote data.js from {len(weeks)} week files and {len(concepts)} concepts (current: {current_desc})")

@@ -34,7 +34,13 @@ focus: Strings continue; conditionals (if/else, booleans) begin.
   for the list). Comma-separated if more than one (common on transition
   weeks). This drives both the "Unit" column on the week page and which
   concept(s) this week's items show up under on the topics page.
-- **`focus:`** — one line, shown on the week page and in the "This Week" card.
+- **`focus:`** — one line, shown on the week page and in the now-card.
+- **`current: true`** — marks this as the current week. Only add it to one
+  week file at a time; move it (delete the old, add the new) when advancing.
+  Drives the row highlight, the now-card, and the "Now" pill on the topics
+  page. Leave it off entirely and nothing is highlighted (fine for e.g. a
+  break between semesters). The build fails loudly if more than one week
+  has it set.
 - Every `##` section is optional to fill in — leave the `<!-- ... -->`
   placeholder if there's nothing for that section this week. Don't rename or
   remove the section headers themselves; the build script only recognizes

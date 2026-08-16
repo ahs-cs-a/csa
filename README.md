@@ -21,11 +21,13 @@ That rebuilds `data.js` from `content/` and pushes it live. See `content/README.
 
 ## Updating "what week is it"
 
+Set `current: true` in the frontmatter of the week file that's now current (and remove it from whichever week had it before), then publish:
+
 ```
-./set-week.sh s2 9
+./publish.sh "advance to week 9"
 ```
 
-Validates the week exists, updates `script.js`, commits, and publishes. Everything on the site (highlighting, the "This Week" card, done/upcoming greying) follows from that one value.
+Exactly one week file should have `current: true` at a time — `build_from_markdown.py` errors out if it finds more than one. Everything on the site (row highlighting, the now-card, done/upcoming greying) follows from that one flag.
 
 ## Where this content came from
 

@@ -1,8 +1,8 @@
 // ---- Where we are in the course right now -------------------------------
-// Update this each week (or wire it up to a real date later). Everything
-// else on the site (highlighting, "This Week" card, done/upcoming state)
-// is derived from this one value.
-const CURRENT = { semester: "s1", week: 1 };
+// CURRENT comes from data.js, generated from whichever week file in
+// content/weeks/ has `current: true` in its frontmatter (see
+// source/build_from_markdown.py). Everything else on the site (row
+// highlighting, the now-card, done/upcoming state) is derived from it.
 
 const SEM_LABEL = { s1: "Semester 1", s2: "Semester 2" };
 
@@ -27,9 +27,11 @@ function weekOrder(w) {
   // s1 weeks first, then s2 — used for before/after comparisons
   return (w.semester === "s1" ? 0 : 1000) + w.week;
 }
-const CURRENT_ORDER = (CURRENT.semester === "s1" ? 0 : 1000) + CURRENT.week;
+const CURRENT_WEEK = CURRENT ? WEEKS.find((w) => w.semester === CURRENT.semester && w.week === CURRENT.week) : null;
+const CURRENT_ORDER = CURRENT_WEEK ? weekOrder(CURRENT_WEEK) : null;
 
 function weekStatus(w) {
+  if (CURRENT_ORDER === null) return "upcoming";
   const o = weekOrder(w);
   if (o === CURRENT_ORDER) return "now";
   return o < CURRENT_ORDER ? "past" : "upcoming";
@@ -98,7 +100,7 @@ function renderWeekTable(semester) {
 function renderNowCard() {
   const el = document.getElementById("now-card");
   if (!el) return;
-  const w = WEEKS.find((w) => w.semester === CURRENT.semester && w.week === CURRENT.week);
+  const w = CURRENT_WEEK;
   if (!w) { el.style.display = "none"; return; }
   const chips = w.concepts.map(chip).join(" ");
   el.innerHTML = `
@@ -133,7 +135,7 @@ function scrollToNow() {
 function initWeekPage() {
   if (!document.getElementById("week-tbody")) return;
   renderNowCard();
-  const startSem = CURRENT.semester;
+  const startSem = CURRENT_WEEK ? CURRENT_WEEK.semester : "s1";
   const startBtn = document.querySelector(`[data-sem-btn="${startSem}"]`);
   if (startBtn) {
     document.querySelectorAll("[data-sem-btn]").forEach((b) => b.setAttribute("aria-pressed", "false"));
@@ -162,8 +164,7 @@ function conceptSpanLabel(c) {
 }
 
 function isCurrentConcept(id) {
-  const w = WEEKS.find((w) => w.semester === CURRENT.semester && w.week === CURRENT.week);
-  return !!w && w.concepts.includes(id);
+  return !!CURRENT_WEEK && CURRENT_WEEK.concepts.includes(id);
 }
 
 function renderTopics() {
