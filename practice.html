@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AP CSA &middot; Practice</title>
+  <link rel="stylesheet" href="styles.css" />
+<style>
+.plist { display:flex; flex-direction:column; gap:14px; margin-top:4px; }
+a.ptile { display:block; text-decoration:none; color:inherit; background:var(--bg);
+  border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:var(--radius);
+  padding:18px 20px; }
+a.ptile:hover { border-color:var(--brand); }
+a.ptile:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+a.ptile .t { font-weight:800; font-size:1.05rem; letter-spacing:-.01em; display:block; }
+a.ptile .d { color:var(--ink-soft); font-size:.92rem; display:block; margin-top:5px; max-width:68ch; }
+a.ptile .u { display:inline-block; margin-top:10px; font-size:.74rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em; color:var(--brand-ink);
+  background:var(--brand-bg); border-radius:999px; padding:3px 10px; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="course-name">AP Computer Science A</span>
+      <span class="course-sub">2025&ndash;26</span>
+    </div>
+    <nav class="main-nav" aria-label="Main">
+      <a href="index.html">This Week</a>
+      <a href="topics.html">By Topic</a>
+      <a href="practice.html" aria-current="page">Practice</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <h1 class="page-title">Practice</h1>
+  <p class="page-lede">Things to poke at rather than read. Each one runs your code and shows you what it actually does &mdash; no answer key, no login, nothing saved.</p>
+
+  <div class="plist">
+    <a class="ptile" href="random-ranges.html">
+      <span class="t">Random Ranges</span>
+      <span class="d">Eight target ranges, four with <code>Math.random()</code> and four with the <code>Random</code> class. Type an expression and a number line shows every value it actually produces &mdash; too wide, too narrow, shifted, or exactly right.</span>
+      <span class="u">Math.random() &amp; the Random class</span>
+    </a>
+
+    <a class="ptile" href="searching.html">
+      <span class="t">Searching</span>
+      <span class="d">Linear and binary search racing on the same list, one comparison at a time, with the eliminated half greying out as you go. Then fill the five blanks in the Java and watch your version get tested against every value in three lists.</span>
+      <span class="u">Concept 6 &middot; Arrays</span>
+    </a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  AP CSA &middot; <a href="index.html">This week</a> &middot; <a href="topics.html">By topic</a>
+</footer>
+</body>
+</html>

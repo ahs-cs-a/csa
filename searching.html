@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AP CSA &middot; Searching</title>
+  <link rel="stylesheet" href="styles.css" />
+<style>
+.card { border:1px solid var(--line); border-radius:var(--radius); background:var(--bg); padding:18px 20px; margin-bottom:18px; }
+.card h2 { font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin:0 0 4px; }
+.card .sub { color:var(--ink-soft); font-size:.9rem; margin:0 0 16px; max-width:70ch; }
+.mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+.controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+.controls label { font-size:.8rem; color:var(--ink-soft); font-weight:600; }
+.controls select, .controls input[type=number] {
+  font:inherit; font-size:.88rem; padding:6px 10px; border:1px solid var(--line);
+  border-radius:8px; background:var(--bg); color:var(--ink);
+}
+button.go { font:inherit; font-size:.88rem; font-weight:700; cursor:pointer; padding:8px 18px;
+  border:1px solid var(--brand); background:var(--brand); color:#fff; border-radius:8px; }
+button.go:hover { background:var(--brand-ink); border-color:var(--brand-ink); }
+button.ghost { font:inherit; font-size:.88rem; font-weight:600; cursor:pointer; padding:8px 14px;
+  border:1px solid var(--line); background:var(--bg-subtle); color:var(--ink); border-radius:8px; }
+button.ghost:hover { border-color:var(--brand); color:var(--brand-ink); }
+button:disabled { opacity:.45; cursor:default; }
+
+.lane { margin-bottom:22px; }
+.lane-head { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+.lane-head .name { font-weight:800; font-size:1rem; }
+.lane-head .count { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  background:var(--chip-bg); border-radius:999px; padding:3px 12px; font-size:.84rem; font-weight:700; }
+.lane-head .state { color:var(--ink-soft); font-size:.86rem; }
+.lane-head .state.win { color:#2e8b4f; font-weight:700; }
+.lane-head .state.lose { color:#c0392b; font-weight:700; }
+
+.cells { display:flex; gap:3px; flex-wrap:nowrap; overflow-x:auto; padding:2px 0 0; }
+.cell { flex:1 1 0; min-width:26px; text-align:center; border:2px solid var(--line); border-radius:6px;
+  padding:7px 2px 4px; background:var(--bg); transition:background .12s, border-color .12s, opacity .12s; }
+.cell .v { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.8rem; font-weight:700; display:block; }
+.cell .i { font-size:.6rem; color:var(--ink-soft); display:block; margin-top:2px; }
+.cell.out   { opacity:.26; }
+.cell.seen  { background:var(--chip-bg); border-color:var(--chip-bg); opacity:.75; }
+.cell.look  { border-color:var(--brand); background:var(--brand-bg); color:var(--brand-ink); transform:translateY(-3px); }
+.cell.found { border-color:#2e8b4f; background:#e4f5ea; color:#1d6b38; }
+:root[data-theme="dark"] .cell.found, :root:not([data-theme="light"]) .cell.found { background:#17351f; color:#8fe0a8; }
+.marks { display:flex; gap:3px; margin-top:3px; }
+.marks .m { flex:1 1 0; min-width:26px; text-align:center; font-size:.62rem; font-weight:800;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:var(--brand-ink); min-height:1.1em; }
+
+.scoreline { display:flex; gap:26px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:14px; margin-top:4px; }
+.scoreline div span { display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); }
+.scoreline div b { font-size:1.3rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+pre.code { background:var(--bg-subtle); border:1px solid var(--line); border-radius:8px;
+  padding:14px 16px; overflow-x:auto; margin:0; font-size:.9rem; line-height:1.75;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.code .kw { color:var(--c2); font-weight:600; }
+.code .cm { color:var(--ink-soft); }
+select.blank { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.86rem;
+  padding:2px 6px; border:2px solid var(--now-line); border-radius:5px; background:var(--now-bg);
+  color:var(--now-ink); font-weight:700; }
+select.blank.right { border-color:#2e8b4f; background:#e4f5ea; color:#1d6b38; }
+:root[data-theme="dark"] select.blank.right, :root:not([data-theme="light"]) select.blank.right { background:#17351f; color:#8fe0a8; }
+
+.result { margin-top:14px; font-size:.93rem; min-height:1.4em; }
+.result.ok  { color:#2e8b4f; font-weight:700; }
+.result.bad { color:#c0392b; font-weight:700; }
+.result .detail { display:block; color:var(--ink-soft); font-weight:400; margin-top:4px; font-size:.86rem; }
+
+table.grow { width:100%; border-collapse:collapse; font-size:.9rem; }
+table.grow th, table.grow td { text-align:left; padding:7px 10px; border-bottom:1px solid var(--line); }
+table.grow th { font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); }
+table.grow td { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+table.grow td.big { color:#c0392b; font-weight:700; }
+table.grow td.small { color:#2e8b4f; font-weight:700; }
+table.grow tr.here { background:var(--brand-bg); }
+
+.note { border-left:4px solid var(--brand); background:var(--brand-bg); color:var(--brand-ink);
+  border-radius:0 8px 8px 0; padding:12px 16px; margin-top:16px; font-size:.9rem; }
+.note b { display:block; margin-bottom:4px; }
+.warnbox { border-left:4px solid var(--now-line); background:var(--now-bg); color:var(--now-ink);
+  border-radius:0 8px 8px 0; padding:12px 16px; margin-top:16px; font-size:.9rem; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="course-name">AP Computer Science A</span>
+      <span class="course-sub">2025&ndash;26</span>
+    </div>
+    <nav class="main-nav" aria-label="Main">
+      <a href="index.html">This Week</a>
+      <a href="topics.html">By Topic</a>
+      <a href="practice.html" aria-current="page">Practice</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <h1 class="page-title">Searching</h1>
+  <p class="page-lede">Same list, same target, two algorithms running side by side. Watch what each one actually touches before you write a line of code.</p>
+
+  <section class="card">
+    <h2>Race them</h2>
+    <p class="sub">The list is sorted, which is the only reason binary search is allowed to play. Step through one comparison at a time, or hit Play. Count the boxes each algorithm has to look at.</p>
+
+    <div class="controls">
+      <label for="size">List size</label>
+      <select id="size"><option>8</option><option selected>16</option><option>32</option></select>
+      <label for="target">Looking for</label>
+      <select id="target"></select>
+      <button class="ghost" id="newlist">New list</button>
+      <span style="flex:1"></span>
+      <button class="go" id="step">Step</button>
+      <button class="ghost" id="play">Play</button>
+      <button class="ghost" id="reset">Reset</button>
+    </div>
+
+    <div class="lane">
+      <div class="lane-head">
+        <span class="name">Linear search</span>
+        <span class="count" id="lincount">0 comparisons</span>
+        <span class="state" id="linstate">ready</span>
+      </div>
+      <div class="cells" id="lincells"></div>
+      <div class="marks" id="linmarks"></div>
+    </div>
+
+    <div class="lane">
+      <div class="lane-head">
+        <span class="name">Binary search</span>
+        <span class="count" id="bincount">0 comparisons</span>
+        <span class="state" id="binstate">ready</span>
+      </div>
+      <div class="cells" id="bincells"></div>
+      <div class="marks" id="binmarks"></div>
+    </div>
+
+    <div class="scoreline">
+      <div><span>linear</span><b id="s-lin">0</b></div>
+      <div><span>binary</span><b id="s-bin">0</b></div>
+      <div><span>worst case, this list</span><b id="s-worst"></b></div>
+      <div><span>list size</span><b id="s-n"></b></div>
+    </div>
+
+    <div class="note">
+      <b>Why the middle?</b>
+      Every comparison binary search makes throws away half of what is left. Half, then half of that, then half of that. The question &ldquo;how many halvings until only one box is left?&rdquo; is exactly what a logarithm answers.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>What happens when the list gets big</h2>
+    <p class="sub">Linear search's worst case is the list size. Binary search's worst case is how many times you can halve the list before one item is left. Watch the right-hand column barely move.</p>
+    <table class="grow" id="growtable">
+      <thead><tr><th style="width:30%">List size</th><th style="width:35%">Linear, worst case</th><th>Binary, worst case</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="note">
+      <b>Read the last two rows</b>
+      Going from a thousand items to a million &mdash; a thousand times more data &mdash; costs binary search ten more comparisons. That is the whole reason anybody sorts anything.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Now write it</h2>
+    <p class="sub">Five blanks. Pick a value for each, then run it. Your version is tested against every value in the list, plus values that are not there at all &mdash; so &ldquo;it worked once&rdquo; will not save you.</p>
+
+<pre class="code" id="codeblock"><span class="kw">public static int</span> binarySearch(<span class="kw">int</span>[] arr, <span class="kw">int</span> target) {
+    <span class="kw">int</span> low  = <span id="b-low"></span>;
+    <span class="kw">int</span> high = <span id="b-high"></span>;
+
+    <span class="kw">while</span> (low &lt;= high) {
+        <span class="kw">int</span> mid = <span id="b-mid"></span>;
+
+        <span class="kw">if</span> (arr[mid] == target) {
+            <span class="kw">return</span> mid;
+        } <span class="kw">else if</span> (arr[mid] &lt; target) {
+            low = <span id="b-lowup"></span>;        <span class="cm">// target is to the right</span>
+        } <span class="kw">else</span> {
+            high = <span id="b-highup"></span>;       <span class="cm">// target is to the left</span>
+        }
+    }
+    <span class="kw">return</span> -1;
+}</pre>
+
+    <div class="controls" style="margin:16px 0 0">
+      <button class="go" id="runcode">Run my version</button>
+      <button class="ghost" id="clearcode">Clear</button>
+    </div>
+    <div class="result" id="coderesult"></div>
+
+    <div class="warnbox">
+      <b>Two blanks decide whether this ever stops.</b>
+      If the range never shrinks, <code>low &lt;= high</code> stays true forever. A wrong answer here does not give you the wrong number &mdash; it gives you a program that hangs. The tester stops it after 200 passes and tells you.
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  AP CSA &middot; <a href="practice.html">Practice</a> &middot; <a href="index.html">This week</a>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+/* ------------------------------------------------------------- the list */
+let arr = [], target = 0;
+
+function makeList(n){
+  const out = []; let v = Math.floor(Math.random() * 6) + 1;
+  for (let i = 0; i < n; i++){ out.push(v); v += Math.floor(Math.random() * 7) + 2; }
+  return out;
+}
+function fillTargets(){
+  const sel = $('target');
+  sel.innerHTML = '';
+  arr.forEach((v, i) => {
+    const o = document.createElement('option');
+    o.value = String(v); o.textContent = v + '  (index ' + i + ')';
+    sel.appendChild(o);
+  });
+  const miss = arr[arr.length - 1] + 3;
+  const o = document.createElement('option');
+  o.value = String(miss); o.textContent = miss + '  (not in the list)';
+  sel.appendChild(o);
+  sel.value = String(arr[Math.floor(Math.random() * arr.length)]);
+  target = parseInt(sel.value, 10);
+}
+
+/* --------------------------------------------------------- the two runs */
+/* each run is precomputed as a list of frames so stepping is trivial */
+function linearFrames(a, t){
+  const f = [];
+  for (let i = 0; i < a.length; i++){
+    f.push({look:i, done:a[i] === t ? 'found' : null});
+    if (a[i] === t) return f;
+  }
+  f.push({look:null, done:'missing'});
+  return f;
+}
+function binaryFrames(a, t){
+  const f = []; let lo = 0, hi = a.length - 1;
+  while (lo <= hi){
+    const mid = Math.floor((lo + hi) / 2);
+    f.push({lo, hi, mid, done:a[mid] === t ? 'found' : null});
+    if (a[mid] === t) return f;
+    if (a[mid] < t) lo = mid + 1; else hi = mid - 1;
+  }
+  f.push({lo, hi, mid:null, done:'missing'});
+  return f;
+}
+
+let linF = [], binF = [], at = 0, playing = null;
+
+function reset(){
+  stopPlay();
+  linF = linearFrames(arr, target);
+  binF = binaryFrames(arr, target);
+  at = 0;
+  render();
+}
+
+function render(){
+  drawCells('lincells', 'linmarks', 'lin');
+  drawCells('bincells', 'binmarks', 'bin');
+
+  const linComps = countComparisons(linF, at);
+  const binComps = countComparisons(binF, at);
+  $('lincount').textContent = linComps + (linComps === 1 ? ' comparison' : ' comparisons');
+  $('bincount').textContent = binComps + (binComps === 1 ? ' comparison' : ' comparisons');
+  $('s-lin').textContent = linComps;
+  $('s-bin').textContent = binComps;
+
+  setState('linstate', linF, at);
+  setState('binstate', binF, at);
+
+  const bothDone = at >= Math.max(linF.length, binF.length);
+  $('step').disabled = bothDone;
+  if (bothDone) stopPlay();
+}
+function countComparisons(frames, upto){
+  let c = 0;
+  for (let i = 0; i < Math.min(upto, frames.length); i++) if (frames[i].look !== null || frames[i].mid !== null) c++;
+  return c;
+}
+function setState(id, frames, upto){
+  const el = $(id);
+  if (upto === 0){ el.textContent = 'ready'; el.className = 'state'; return; }
+  const f = frames[Math.min(upto, frames.length) - 1];
+  if (upto >= frames.length && f.done === 'found'){ el.textContent = 'found it'; el.className = 'state win'; }
+  else if (upto >= frames.length && f.done === 'missing'){ el.textContent = 'not in the list, returns -1'; el.className = 'state lose'; }
+  else { el.textContent = 'searching…'; el.className = 'state'; }
+}
+
+function drawCells(cellsId, marksId, which){
+  const host = $(cellsId), marks = $(marksId);
+  host.innerHTML = ''; marks.innerHTML = '';
+  const frames = which === 'lin' ? linF : binF;
+  const f = at > 0 ? frames[Math.min(at, frames.length) - 1] : null;
+
+  arr.forEach((v, i) => {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    if (f){
+      if (which === 'lin'){
+        if (f.look === i) c.classList.add(f.done === 'found' ? 'found' : 'look');
+        else if (f.look === null || i < f.look) c.classList.add('seen');
+      } else {
+        if (i < f.lo || i > f.hi) c.classList.add('out');
+        if (f.mid === i) c.classList.add(f.done === 'found' ? 'found' : 'look');
+      }
+    }
+    c.innerHTML = '<span class="v">' + v + '</span><span class="i">' + i + '</span>';
+    host.appendChild(c);
+
+    const m = document.createElement('div');
+    m.className = 'm';
+    if (which === 'bin' && f && f.mid !== null){
+      const tags = [];
+      if (i === f.lo) tags.push('lo');
+      if (i === f.mid) tags.push('mid');
+      if (i === f.hi) tags.push('hi');
+      m.textContent = tags.join('/');
+    } else if (which === 'lin' && f && f.look === i){
+      m.textContent = 'i';
+    }
+    marks.appendChild(m);
+  });
+}
+
+function step(){ if (at < Math.max(linF.length, binF.length)){ at++; render(); } }
+function stopPlay(){ if (playing){ clearInterval(playing); playing = null; $('play').textContent = 'Play'; } }
+function togglePlay(){
+  if (playing){ stopPlay(); return; }
+  if (at >= Math.max(linF.length, binF.length)) return;
+  $('play').textContent = 'Pause';
+  playing = setInterval(() => {
+    if (at >= Math.max(linF.length, binF.length)) { stopPlay(); return; }
+    step();
+  }, 520);
+}
+
+/* worst case over every possible target for the current list */
+function worstFor(a){
+  let w = 0;
+  const probes = a.slice(); probes.push(a[a.length-1] + 3); probes.push(a[0] - 3);
+  probes.forEach(t => { w = Math.max(w, binaryFrames(a, t).filter(f => f.mid !== null).length); });
+  return w;
+}
+
+function rebuild(){
+  arr = makeList(parseInt($('size').value, 10));
+  fillTargets();
+  $('s-n').textContent = arr.length;
+  $('s-worst').textContent = worstFor(arr);
+  reset();
+}
+
+$('size').onchange   = rebuild;
+$('newlist').onclick = rebuild;
+$('target').onchange = () => { target = parseInt($('target').value, 10); reset(); };
+$('step').onclick    = () => { stopPlay(); step(); };
+$('play').onclick    = togglePlay;
+$('reset').onclick   = () => { at = 0; stopPlay(); render(); };
+
+/* ------------------------------------------------------- growth table */
+(function(){
+  const body = $('growtable').querySelector('tbody');
+  [8, 16, 32, 64, 128, 1024, 1048576].forEach(n => {
+    const tr = document.createElement('tr');
+    const bin = Math.floor(Math.log2(n)) + 1;
+    tr.innerHTML = '<td>' + n.toLocaleString() + '</td>'
+                 + '<td class="big">' + n.toLocaleString() + '</td>'
+                 + '<td class="small">' + bin + '</td>';
+    body.appendChild(tr);
+  });
+})();
+
+/* --------------------------------------------------------- code blanks */
+const BLANKS = {
+  'b-low':    {right:'0',                 opts:['0', '1', 'arr.length']},
+  'b-high':   {right:'arr.length - 1',    opts:['arr.length - 1', 'arr.length', 'arr.length / 2']},
+  'b-mid':    {right:'(low + high) / 2',  opts:['(low + high) / 2', 'low + high', '(high - low) / 2']},
+  'b-lowup':  {right:'mid + 1',           opts:['mid + 1', 'mid', 'mid - 1']},
+  'b-highup': {right:'mid - 1',           opts:['mid - 1', 'mid', 'mid + 1']}
+};
+function buildBlanks(){
+  Object.keys(BLANKS).forEach(id => {
+    const spec = BLANKS[id];
+    const sel = document.createElement('select');
+    sel.className = 'blank';
+    const blank = document.createElement('option');
+    blank.value = ''; blank.textContent = ' ? ';
+    sel.appendChild(blank);
+    spec.opts.slice().sort().forEach(o => {
+      const op = document.createElement('option');
+      op.value = o; op.textContent = o;
+      sel.appendChild(op);
+    });
+    sel.onchange = () => { sel.classList.remove('right'); $('coderesult').textContent = ''; $('coderesult').className = 'result'; };
+    $(id).replaceWith(sel);
+    sel.id = id;
+  });
+}
+buildBlanks();
+
+function studentSearch(a, t, c){
+  let low  = c['b-low']  === '0' ? 0 : c['b-low'] === '1' ? 1 : a.length;
+  let high = c['b-high'] === 'arr.length - 1' ? a.length - 1
+           : c['b-high'] === 'arr.length'     ? a.length
+           : Math.floor(a.length / 2);
+  let passes = 0;
+  while (low <= high){
+    if (++passes > 200) return {err:'loop'};
+    let mid;
+    if (c['b-mid'] === '(low + high) / 2')      mid = Math.floor((low + high) / 2);
+    else if (c['b-mid'] === 'low + high')       mid = low + high;
+    else                                        mid = Math.floor((high - low) / 2);
+    if (mid < 0 || mid >= a.length) return {err:'oob', mid};
+    if (a[mid] === t) return {idx:mid, passes};
+    if (a[mid] < t)  low  = c['b-lowup']  === 'mid + 1' ? mid + 1 : c['b-lowup']  === 'mid' ? mid : mid - 1;
+    else             high = c['b-highup'] === 'mid - 1' ? mid - 1 : c['b-highup'] === 'mid' ? mid : mid + 1;
+  }
+  return {idx:-1, passes};
+}
+
+$('runcode').onclick = () => {
+  const c = {}; let missing = false;
+  Object.keys(BLANKS).forEach(id => { c[id] = $(id).value; if (!c[id]) missing = true; });
+  const R = $('coderesult');
+  if (missing){ R.textContent = 'Fill in all five blanks first.'; R.className = 'result bad'; return; }
+
+  const lists = [arr, makeList(8), makeList(32)];
+  for (const a of lists){
+    const probes = a.concat([a[0] - 1, a[a.length-1] + 1, a[0] + 1]);
+    for (const t of probes){
+      const got = studentSearch(a, t, c);
+      const want = a.indexOf(t);
+      if (got.err === 'loop'){
+        R.innerHTML = 'That version never stops.'
+          + '<span class="detail">Searching for ' + t + ' in a list of ' + a.length
+          + ', the range stopped shrinking and <code>low &lt;= high</code> stayed true. '
+          + 'Look at what you assign to low and high.</span>';
+        R.className = 'result bad'; return;
+      }
+      if (got.err === 'oob'){
+        R.innerHTML = 'That version reads outside the array.'
+          + '<span class="detail">Searching for ' + t + ' it tried <code>arr[' + got.mid
+          + ']</code> in a list of ' + a.length + '. In Java that is an ArrayIndexOutOfBoundsException.</span>';
+        R.className = 'result bad'; return;
+      }
+      if (got.idx !== want){
+        R.innerHTML = 'Wrong answer.'
+          + '<span class="detail">Searching for <b>' + t + '</b> it returned <b>' + got.idx
+          + '</b>, but the right answer is <b>' + want + '</b>'
+          + (want === -1 ? ' (it is not in the list).' : '.') + '</span>';
+        R.className = 'result bad'; return;
+      }
+      const allowed = Math.floor(Math.log2(a.length)) + 1;
+      if (got.passes > allowed){
+        R.innerHTML = 'Right answers, wrong algorithm.'
+          + '<span class="detail">Searching for <b>' + t + '</b> in a list of ' + a.length
+          + ' it took <b>' + got.passes + '</b> comparisons. Binary search should never need more than '
+          + allowed + '. Your version finds things by creeping one box at a time &mdash; that is linear '
+          + 'search in disguise. Check what mid is being set to.</span>';
+        R.className = 'result bad'; return;
+      }
+    }
+  }
+  Object.keys(BLANKS).forEach(id => { if ($(id).value === BLANKS[id].right) $(id).classList.add('right'); });
+  R.innerHTML = 'Correct on every value in three different lists, and it returns -1 for values that are not there.'
+    + '<span class="detail">That is binary search.</span>';
+  R.className = 'result ok';
+};
+$('clearcode').onclick = () => {
+  Object.keys(BLANKS).forEach(id => { $(id).value = ''; $(id).classList.remove('right'); });
+  $('coderesult').textContent = ''; $('coderesult').className = 'result';
+};
+
+rebuild();
+</script>
+</body>
+</html>

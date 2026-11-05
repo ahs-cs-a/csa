@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AP CSA &middot; Random Ranges</title>
+  <link rel="stylesheet" href="styles.css" />
+<style>
+.task-nav { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 18px; }
+.task-nav button {
+  font:inherit; font-size:.82rem; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--bg-subtle); color:var(--ink-soft);
+  padding:6px 12px; border-radius:999px;
+}
+.task-nav button[aria-current="true"] { background:var(--brand-bg); border-color:var(--brand); color:var(--brand-ink); }
+.task-nav button.done::after { content:" \2713"; color:#2e8b4f; font-weight:800; }
+.task-nav .sep { align-self:center; color:var(--ink-soft); font-size:.78rem; margin:0 6px 0 10px; font-weight:600; }
+
+.card { border:1px solid var(--line); border-radius:var(--radius); background:var(--bg); padding:18px 20px; margin-bottom:18px; }
+.card h2 { font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin:0 0 12px; }
+
+.goal { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
+.goal .want { font-size:1.35rem; font-weight:800; letter-spacing:-.02em; }
+.goal .ctx { color:var(--ink-soft); }
+.method { display:inline-block; font-size:.78rem; font-weight:700; padding:3px 9px; border-radius:999px;
+  background:var(--chip-bg); color:var(--ink-soft); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+pre.code { background:var(--bg-subtle); border:1px solid var(--line); border-radius:8px;
+  padding:12px 14px; overflow-x:auto; margin:14px 0 0; font-size:.9rem; line-height:1.6;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.code .kw { color:var(--c2); font-weight:600; }
+.code .cm { color:var(--ink-soft); }
+:root:not([data-theme="light"]) .code .kw { color:#c0a0ff; }
+@media (prefers-color-scheme: light) { }
+
+.answer-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:.95rem;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; margin-top:4px; }
+.answer-row input {
+  flex:1 1 320px; min-width:240px; font:inherit; padding:10px 12px;
+  border:2px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink);
+}
+.answer-row input:focus { outline:none; border-color:var(--brand); }
+.answer-row input.bad { border-color:#d9534f; }
+.answer-row input.good { border-color:#2e8b4f; }
+
+.verdict { margin-top:12px; font-size:.95rem; min-height:1.4em; }
+.verdict.nope { color:#c0392b; font-weight:700; }
+.verdict.type { color:#b06a00; font-weight:700; }
+.verdict.off  { color:#b06a00; font-weight:600; }
+.verdict.yes  { color:#2e8b4f; font-weight:700; }
+.caret { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:#c0392b;
+  white-space:pre; font-size:.9rem; margin-top:2px; }
+
+.nl-wrap { margin-top:16px; }
+.nl-legend { display:flex; gap:16px; flex-wrap:wrap; font-size:.78rem; color:var(--ink-soft); margin-bottom:8px; }
+.nl-legend span::before { content:""; display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
+.nl-legend .k-want::before { background:var(--brand-bg); border:1px solid var(--brand); }
+.nl-legend .k-hit::before  { background:var(--brand); }
+.nl-legend .k-over::before { background:#d9534f; }
+.nl-legend .k-miss::before { background:transparent; border:1px dashed var(--ink-soft); }
+
+.nl { display:flex; align-items:flex-end; gap:1px; height:120px; border-bottom:2px solid var(--line);
+  padding:0 2px; overflow-x:auto; }
+.nl .col { flex:1 1 0; min-width:4px; display:flex; flex-direction:column; justify-content:flex-end; height:100%; position:relative; }
+.nl .col.want { background:var(--brand-bg); }
+.nl .bar { width:100%; background:var(--brand); border-radius:2px 2px 0 0; min-height:0; }
+.nl .col.over .bar { background:#d9534f; }
+.nl .col.miss .bar { border-top:1px dashed var(--ink-soft); }
+.nl-axis { display:flex; gap:1px; padding:4px 2px 0; overflow-x:auto; }
+.nl-axis .t { flex:1 1 0; min-width:4px; text-align:center; font-size:.68rem; color:var(--ink-soft);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; white-space:nowrap; }
+
+.readout { display:flex; gap:22px; flex-wrap:wrap; margin-top:14px; font-size:.9rem; }
+.readout div span { display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); }
+.readout div b { font-size:1.05rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+details.hint { margin-top:16px; border-top:1px solid var(--line); padding-top:12px; }
+details.hint summary { cursor:pointer; font-size:.85rem; font-weight:700; color:var(--brand); }
+details.hint pre { margin:10px 0 0; }
+
+.trap { border-left:4px solid var(--now-line); background:var(--now-bg); color:var(--now-ink);
+  border-radius:0 8px 8px 0; padding:12px 16px; margin-top:18px; font-size:.9rem; }
+.trap b { display:block; margin-bottom:4px; }
+.btn-ghost { font:inherit; font-size:.82rem; font-weight:600; cursor:pointer; padding:7px 14px;
+  border:1px solid var(--line); background:var(--bg-subtle); color:var(--ink); border-radius:8px; }
+.btn-ghost:hover { border-color:var(--brand); color:var(--brand-ink); }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="course-name">AP Computer Science A</span>
+      <span class="course-sub">2025&ndash;26</span>
+    </div>
+    <nav class="main-nav" aria-label="Main">
+      <a href="index.html">This Week</a>
+      <a href="topics.html">By Topic</a>
+      <a href="practice.html" aria-current="page">Practice</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <h1 class="page-title">Random Ranges</h1>
+  <p class="page-lede">Eight targets. Write the Java that produces exactly that range &mdash; no wider, no narrower, not shifted. The number line underneath runs your expression a few thousand times and shows you what it actually lands on.</p>
+
+  <div class="task-nav" id="tasknav"></div>
+
+  <section class="card">
+    <div class="goal">
+      <span class="want" id="want"></span>
+      <span class="ctx" id="ctx"></span>
+    </div>
+    <p style="margin:6px 0 0"><span class="method" id="method"></span></p>
+
+    <pre class="code" id="starter"></pre>
+
+    <div class="answer-row">
+      <label for="expr" style="font-family:inherit;color:var(--ink-soft);font-size:.85rem">int value =</label>
+      <input id="expr" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="type the expression here" />
+      <span style="color:var(--ink-soft)">;</span>
+    </div>
+    <div class="verdict" id="verdict"></div>
+    <div class="caret" id="caret"></div>
+
+    <div class="nl-wrap">
+      <div class="nl-legend">
+        <span class="k-want">target</span>
+        <span class="k-hit">your values</span>
+        <span class="k-over">outside the target</span>
+        <span class="k-miss">never generated</span>
+      </div>
+      <div class="nl" id="nl"></div>
+      <div class="nl-axis" id="nlaxis"></div>
+    </div>
+
+    <div class="readout">
+      <div><span>target</span><b id="rt"></b></div>
+      <div><span>yours</span><b id="ry">&mdash;</b></div>
+      <div><span>values hit</span><b id="rh">&mdash;</b></div>
+      <div style="margin-left:auto"><button class="btn-ghost" id="reroll">Run it again</button></div>
+    </div>
+
+    <details class="hint">
+      <summary>Show me the pattern</summary>
+<pre class="code">
+<span class="cm">// Math.random() gives a double from 0.0 up to (but never) 1.0</span>
+<span class="cm">// low to high, inclusive. The count of values is (high - low + 1).</span>
+int value = (int)(Math.random() * (high - low + 1)) + low;
+
+<span class="cm">// Random does the same job with the count passed straight in</span>
+Random rand = new Random();
+int value = rand.nextInt(high - low + 1) + low;
+</pre>
+      <p style="font-size:.86rem;color:var(--ink-soft);margin:10px 0 0">Work out the count first, then the shift. For <code>-3</code> to <code>8</code> the count is <code>8 - (-3) + 1 = 12</code>, so you want 12 values starting at <code>-3</code>.</p>
+    </details>
+
+    <div class="trap">
+      <b>The one that bites everybody</b>
+      <code>(int)Math.random() * 6</code> is legal Java and always gives 0. The cast grabs <code>Math.random()</code> by itself and chops it to 0 before the multiply ever happens. Try typing it in &mdash; the number line will show you one lonely bar.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>What the two tools actually give you</h2>
+    <table class="week-table" style="margin:0">
+      <thead><tr><th style="width:46%">Expression</th><th style="width:22%">Smallest</th><th style="width:22%">Largest</th><th>Count</th></tr></thead>
+      <tbody style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
+        <tr><td>Math.random()</td><td>0.0</td><td>just under 1.0</td><td>&mdash;</td></tr>
+        <tr><td>(int)(Math.random() * n)</td><td>0</td><td>n - 1</td><td>n</td></tr>
+        <tr><td>rand.nextInt(n)</td><td>0</td><td>n - 1</td><td>n</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.86rem;color:var(--ink-soft);margin:12px 0 0">Both start at 0 and stop one short of the number you hand them. Everything else is addition.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  AP CSA &middot; <a href="practice.html">Practice</a> &middot; <a href="index.html">This week</a>
+</footer>
+
+<script>
+/* ---------------------------------------------------------------- tasks */
+const TASKS = [
+  {id:'m1', mode:'math', lo:0,    hi:9,   ctx:'a single digit'},
+  {id:'m2', mode:'math', lo:1,    hi:6,   ctx:'one roll of a die'},
+  {id:'m3', mode:'math', lo:-10,  hi:10,  ctx:'a temperature change, in degrees'},
+  {id:'m4', mode:'math', lo:-20,  hi:-5,  ctx:'a freezer reading, always below zero'},
+  {id:'r1', mode:'rand', lo:0,    hi:51,  ctx:'an index into a deck of cards'},
+  {id:'r2', mode:'rand', lo:5,    hi:15,  ctx:'how many players showed up'},
+  {id:'r3', mode:'rand', lo:-3,   hi:8,   ctx:'yards gained or lost on a play'},
+  {id:'r4', mode:'rand', lo:-100, hi:-50, ctx:'elevation below sea level'}
+];
+const STARTER = {
+  math: '<span class="cm">// use Math.random() &mdash; no Random object</span>\n<span class="kw">int</span> value = <span class="cm">/* your expression */</span>;',
+  rand: '<span class="cm">// a Random object named rand already exists</span>\n<span class="kw">import</span> java.util.Random;\nRandom rand = <span class="kw">new</span> Random();\n<span class="kw">int</span> value = <span class="cm">/* your expression */</span>;'
+};
+const SAMPLES = 4000, MAX_COLS = 160;
+const solved = new Set();
+let cur = 0;
+
+/* ------------------------------------------------------------- tokenizer */
+function tokenize(src){
+  const toks = []; let i = 0;
+  const digit = c => c >= '0' && c <= '9';
+  while (i < src.length){
+    const c = src[i];
+    if (/\s/.test(c)) { i++; continue; }
+    if (digit(c)) { let j = i; while (j < src.length && digit(src[j])) j++;
+      toks.push({t:'num', v:parseInt(src.slice(i,j),10), p:i}); i = j; continue; }
+    if (/[A-Za-z_$]/.test(c)) { let j = i; while (j < src.length && /[A-Za-z0-9_$.]/.test(src[j])) j++;
+      toks.push({t:'id', v:src.slice(i,j), p:i}); i = j; continue; }
+    if ('()+-*/'.indexOf(c) >= 0) { toks.push({t:c, p:i}); i++; continue; }
+    throw {p:i};
+  }
+  toks.push({t:'eof', p:src.length});
+  return toks;
+}
+
+/* ---------------------------------------------------------------- parser */
+function parse(src){
+  const toks = tokenize(src); let k = 0;
+  const peek = () => toks[k];
+  const next = () => toks[k++];
+  const fail = tok => { throw {p:(tok || peek()).p}; };
+
+  function expr(){
+    let n = term();
+    while (peek().t === '+' || peek().t === '-'){ const op = next().t; n = {k:'bin', op, a:n, b:term()}; }
+    return n;
+  }
+  function term(){
+    let n = unary();
+    while (peek().t === '*' || peek().t === '/'){ const op = next().t; n = {k:'bin', op, a:n, b:unary()}; }
+    return n;
+  }
+  function unary(){
+    if (peek().t === '-'){ next(); return {k:'neg', a:unary()}; }
+    if (peek().t === '+'){ next(); return unary(); }
+    return atom();
+  }
+  function atom(){
+    const t = peek();
+    if (t.t === 'num'){ next(); return {k:'num', v:t.v}; }
+    if (t.t === '('){
+      if (toks[k+1] && toks[k+1].t === 'id' && toks[k+1].v === 'int' && toks[k+2] && toks[k+2].t === ')'){
+        next(); next(); next();
+        return {k:'cast', a:unary()};
+      }
+      next();
+      const e = expr();
+      if (peek().t !== ')') fail();
+      next();
+      return e;
+    }
+    if (t.t === 'id'){
+      next();
+      if (t.v === 'Math.random'){
+        if (peek().t !== '(') fail(); next();
+        if (peek().t !== ')') fail(); next();
+        return {k:'rand'};
+      }
+      if (/^[A-Za-z_$][A-Za-z0-9_$]*\.nextInt$/.test(t.v)){
+        if (peek().t !== '(') fail(); next();
+        const a = expr();
+        if (peek().t !== ')') fail(); next();
+        return {k:'nextInt', a};
+      }
+      fail(t);
+    }
+    fail(t);
+  }
+  const ast = expr();
+  if (peek().t !== 'eof') fail();
+  return ast;
+}
+
+/* ------------------------------------------------------------ evaluation */
+function collect(n, out){
+  if (!n) return;
+  if (n.k === 'rand' || n.k === 'nextInt'){ n._i = out.length; out.push(n); }
+  collect(n.a, out); collect(n.b, out);
+}
+function evalNode(n, pick){
+  switch (n.k){
+    case 'num':  return n.v;
+    case 'neg':  return -evalNode(n.a, pick);
+    case 'cast': return Math.trunc(evalNode(n.a, pick));
+    case 'rand': return pick(n, 0, 1 - 1e-12);
+    case 'nextInt': {
+      const b = evalNode(n.a, pick);
+      if (!Number.isInteger(b) || b <= 0) throw {bound:true};
+      return pick(n, 0, b - 1);
+    }
+    case 'bin': {
+      const a = evalNode(n.a, pick), b = evalNode(n.b, pick);
+      if (n.op === '+') return a + b;
+      if (n.op === '-') return a - b;
+      if (n.op === '*') return a * b;
+      if (b === 0) throw {bound:true};
+      return (Number.isInteger(a) && Number.isInteger(b)) ? Math.trunc(a / b) : a / b;
+    }
+  }
+  throw {bound:true};
+}
+/* exact endpoints: every random source is monotone here, so the extremes
+   live at the corners of the source space. */
+function exactRange(ast, srcs){
+  if (srcs.length === 0 || srcs.length > 12) return null;
+  let lo = Infinity, hi = -Infinity;
+  for (let m = 0; m < (1 << srcs.length); m++){
+    const v = evalNode(ast, (n, a, b) => ((m >> n._i) & 1) ? b : a);
+    lo = Math.min(lo, v); hi = Math.max(hi, v);
+  }
+  return {lo, hi};
+}
+function sample(ast, n){
+  const counts = new Map();
+  let allInt = true;
+  for (let i = 0; i < n; i++){
+    const v = evalNode(ast, (node, a, b) => node.k === 'rand'
+      ? Math.random()
+      : Math.floor(Math.random() * (b + 1)));
+    if (!Number.isInteger(v)) allInt = false;
+    counts.set(v, (counts.get(v) || 0) + 1);
+  }
+  return {counts, allInt};
+}
+function usesKind(n, kind){
+  if (!n) return false;
+  if (n.k === kind) return true;
+  return usesKind(n.a, kind) || usesKind(n.b, kind);
+}
+
+/* -------------------------------------------------------------- the page */
+const $ = id => document.getElementById(id);
+
+function drawNav(){
+  const nav = $('tasknav');
+  nav.innerHTML = '';
+  TASKS.forEach((t, i) => {
+    if (i === 4){ const s = document.createElement('span'); s.className = 'sep'; s.textContent = 'Random class'; nav.appendChild(s); }
+    if (i === 0){ const s = document.createElement('span'); s.className = 'sep'; s.style.marginLeft = '0'; s.textContent = 'Math.random()'; nav.appendChild(s); }
+    const b = document.createElement('button');
+    b.textContent = t.lo + ' to ' + t.hi;
+    b.setAttribute('aria-current', i === cur ? 'true' : 'false');
+    if (solved.has(t.id)) b.classList.add('done');
+    b.onclick = () => { cur = i; loadTask(); };
+    nav.appendChild(b);
+  });
+}
+
+function loadTask(){
+  const t = TASKS[cur];
+  $('want').textContent = t.lo + ' to ' + t.hi;
+  $('ctx').textContent = '— ' + t.ctx + ', ends included';
+  $('method').textContent = t.mode === 'math' ? 'Math.random()' : 'rand.nextInt( )';
+  $('starter').innerHTML = STARTER[t.mode];
+  $('rt').textContent = t.lo + ' .. ' + t.hi;
+  $('expr').value = '';
+  $('expr').className = '';
+  $('verdict').textContent = '';
+  $('verdict').className = 'verdict';
+  $('caret').textContent = '';
+  $('ry').innerHTML = '&mdash;';
+  $('rh').innerHTML = '&mdash;';
+  drawNav();
+  drawLine(null);
+  $('expr').focus();
+}
+
+function drawLine(res){
+  const t = TASKS[cur];
+  const nl = $('nl'), ax = $('nlaxis');
+  nl.innerHTML = ''; ax.innerHTML = '';
+
+  let lo = t.lo, hi = t.hi;
+  if (res && res.range){ lo = Math.min(lo, res.range.lo); hi = Math.max(hi, res.range.hi); }
+  const pad = Math.max(1, Math.round((hi - lo + 1) * 0.08));
+  lo -= pad; hi += pad;
+
+  if (hi - lo + 1 > MAX_COLS){
+    nl.innerHTML = '<p style="color:var(--ink-soft);font-size:.86rem;align-self:center">'
+      + 'That range is ' + (res && res.range ? (res.range.hi - res.range.lo + 1) : (hi - lo + 1))
+      + ' values wide &mdash; too wide to draw. Check the count you passed in.</p>';
+    return;
+  }
+
+  const counts = res ? res.counts : new Map();
+  let peak = 1;
+  counts.forEach(c => { if (c > peak) peak = c; });
+
+  for (let v = lo; v <= hi; v++){
+    const col = document.createElement('div');
+    col.className = 'col';
+    const inTarget = v >= t.lo && v <= t.hi;
+    const n = counts.get(v) || 0;
+    if (inTarget) col.classList.add('want');
+    if (n > 0 && !inTarget) col.classList.add('over');
+    if (n === 0 && inTarget && res) col.classList.add('miss');
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = n > 0 ? Math.max(4, Math.round(n / peak * 100)) + '%' : (res && inTarget ? '2px' : '0');
+    col.title = v + ': ' + n;
+    col.appendChild(bar);
+    nl.appendChild(col);
+
+    const tk = document.createElement('div');
+    tk.className = 't';
+    const span = hi - lo + 1;
+    const every = span <= 24 ? 1 : span <= 60 ? 5 : 10;
+    tk.textContent = (v % every === 0 || v === t.lo || v === t.hi) ? v : '';
+    ax.appendChild(tk);
+  }
+}
+
+function check(){
+  const t = TASKS[cur];
+  const src = $('expr').value;
+  const V = $('verdict'), C = $('caret'), I = $('expr');
+  C.textContent = '';
+  if (!src.trim()){ V.textContent = ''; V.className = 'verdict'; I.className = ''; drawLine(null); return; }
+
+  let ast;
+  try {
+    ast = parse(src);
+  } catch (e){
+    V.textContent = 'NOT QUITE — your syntax is wrong.';
+    V.className = 'verdict nope';
+    if (typeof e.p === 'number') C.textContent = src.replace(/[^\t]/g, ' ').slice(0, e.p) + '^';
+    I.className = 'bad';
+    $('ry').innerHTML = '&mdash;'; $('rh').innerHTML = '&mdash;';
+    drawLine(null);
+    return;
+  }
+
+  if (t.mode === 'math' && !usesKind(ast, 'rand')){
+    V.textContent = 'NOT QUITE — this one wants Math.random().'; V.className = 'verdict off';
+    I.className = 'bad'; drawLine(null); return;
+  }
+  if (t.mode === 'rand' && !usesKind(ast, 'nextInt')){
+    V.textContent = 'NOT QUITE — this one wants rand.nextInt().'; V.className = 'verdict off';
+    I.className = 'bad'; drawLine(null); return;
+  }
+
+  const srcs = []; collect(ast, srcs);
+  let res;
+  try {
+    res = sample(ast, SAMPLES);
+    res.range = exactRange(ast, srcs);
+  } catch (e){
+    V.textContent = 'NOT QUITE — that asks nextInt() for a count that is not a positive whole number.';
+    V.className = 'verdict nope'; I.className = 'bad'; drawLine(null); return;
+  }
+  if (!res.range){
+    let lo = Infinity, hi = -Infinity;
+    res.counts.forEach((c, v) => { lo = Math.min(lo, v); hi = Math.max(hi, v); });
+    res.range = {lo, hi};
+  }
+
+  if (!res.allInt){
+    V.textContent = 'NOT QUITE — that is a double, and value is an int. Java will not assign it.';
+    V.className = 'verdict type'; I.className = 'bad';
+    $('ry').textContent = 'not a whole number'; $('rh').innerHTML = '&mdash;';
+    drawLine(null);
+    return;
+  }
+
+  const hit = res.counts.size;
+  const want = t.hi - t.lo + 1;
+  $('ry').textContent = res.range.lo + ' .. ' + res.range.hi;
+  $('rh').textContent = hit + ' of ' + want;
+  drawLine(res);
+
+  const exact = res.range.lo === t.lo && res.range.hi === t.hi && hit === want;
+  if (exact){
+    V.textContent = 'That is it — ' + t.lo + ' to ' + t.hi + ', every value reachable.';
+    V.className = 'verdict yes'; I.className = 'good';
+    solved.add(t.id); drawNav();
+  } else {
+    I.className = 'bad';
+    V.className = 'verdict off';
+    if (res.range.lo === res.range.hi){
+      V.textContent = 'NOT QUITE — that always gives ' + res.range.lo + '. Look at where the cast lands.';
+    } else if (hit < res.range.hi - res.range.lo + 1){
+      V.textContent = 'NOT QUITE — it skips values. You get ' + hit + ' different numbers, not ' + want + '.';
+    } else if (res.range.hi - res.range.lo + 1 === want){
+      V.textContent = 'NOT QUITE — right width, wrong place. You are off by '
+        + (t.lo - res.range.lo > 0 ? '+' : '') + (t.lo - res.range.lo) + '.';
+    } else {
+      V.textContent = 'NOT QUITE — that is ' + (res.range.hi - res.range.lo + 1)
+        + ' values wide and you need ' + want + '.';
+    }
+  }
+}
+
+let timer = null;
+$('expr').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(check, 180); });
+$('reroll').addEventListener('click', check);
+document.addEventListener('keydown', e => {
+  if (e.target === $('expr')) return;
+  if (e.key === 'ArrowRight' && cur < TASKS.length - 1){ cur++; loadTask(); }
+  if (e.key === 'ArrowLeft'  && cur > 0){ cur--; loadTask(); }
+});
+
+loadTask();
+</script>
+</body>
+</html>
