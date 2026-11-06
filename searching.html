@@ -101,11 +101,11 @@ table.grow tr.here { background:var(--brand-bg); }
 
 <main id="main">
   <h1 class="page-title">Searching</h1>
-  <p class="page-lede">Same list, same target, two algorithms running side by side. Watch what each one actually touches before you write a line of code.</p>
+  <p class="page-lede">Same list, same target, two algorithms side by side. Watch which boxes each one checks before you write any code.</p>
 
   <section class="card">
     <h2>Race them</h2>
-    <p class="sub">The list is sorted, which is the only reason binary search is allowed to play. Step through one comparison at a time, or hit Play. Count the boxes each algorithm has to look at.</p>
+    <p class="sub">Binary search only works because the list is sorted. Click Step to go one comparison at a time, or click Play. Count how many boxes each one checks.</p>
 
     <div class="controls">
       <label for="size">List size</label>
@@ -148,26 +148,26 @@ table.grow tr.here { background:var(--brand-bg); }
 
     <div class="note">
       <b>Why the middle?</b>
-      Every comparison binary search makes throws away half of what is left. Half, then half of that, then half of that. The question &ldquo;how many halvings until only one box is left?&rdquo; is exactly what a logarithm answers.
+      Each comparison in binary search gets rid of half of what is left. Then half again, and half again. How many times you can cut the list in half is what a logarithm tells you.
     </div>
   </section>
 
   <section class="card">
     <h2>What happens when the list gets big</h2>
-    <p class="sub">Linear search's worst case is the list size. Binary search's worst case is how many times you can halve the list before one item is left. Watch the right-hand column barely move.</p>
+    <p class="sub">Linear search's worst case is the list size. Binary search's worst case is how many times you can halve the list before one item is left. Look at how slowly the right column grows.</p>
     <table class="grow" id="growtable">
       <thead><tr><th style="width:30%">List size</th><th style="width:35%">Linear, worst case</th><th>Binary, worst case</th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="note">
-      <b>Read the last two rows</b>
-      Going from a thousand items to a million &mdash; a thousand times more data &mdash; costs binary search ten more comparisons. That is the whole reason anybody sorts anything.
+      <b>Look at the last two rows</b>
+      Going from a thousand items to a million is a thousand times more data, but binary search only needs ten more comparisons. That is why we sort data.
     </div>
   </section>
 
   <section class="card">
     <h2>Now write it</h2>
-    <p class="sub">Five blanks. Pick a value for each, then run it. Your version is tested against every value in the list, plus values that are not there at all &mdash; so &ldquo;it worked once&rdquo; will not save you.</p>
+    <p class="sub">Five blanks. Pick an answer for each, then run it. Your version is tested on every value in the list, plus values that are not in the list, so it has to work every time.</p>
 
 <pre class="code" id="codeblock"><span class="kw">public static int</span> binarySearch(<span class="kw">int</span>[] arr, <span class="kw">int</span> target) {
     <span class="kw">int</span> low  = <span id="b-low"></span>;
@@ -195,7 +195,7 @@ table.grow tr.here { background:var(--brand-bg); }
 
     <div class="warnbox">
       <b>Two blanks decide whether this ever stops.</b>
-      If the range never shrinks, <code>low &lt;= high</code> stays true forever. A wrong answer here does not give you the wrong number &mdash; it gives you a program that hangs. The tester stops it after 200 passes and tells you.
+      If the range never gets smaller, <code>low &lt;= high</code> stays true forever. A wrong answer here does not give you the wrong number. It gives you an infinite loop. The tester stops it after 200 passes and tells you.
     </div>
   </section>
 </main>
@@ -441,20 +441,20 @@ $('runcode').onclick = () => {
       const got = studentSearch(a, t, c);
       const want = a.indexOf(t);
       if (got.err === 'loop'){
-        R.innerHTML = 'That version never stops.'
+        R.innerHTML = 'NOT QUITE - that is an infinite loop.'
           + '<span class="detail">Searching for ' + t + ' in a list of ' + a.length
-          + ', the range stopped shrinking and <code>low &lt;= high</code> stayed true. '
+          + ', the range stopped getting smaller and <code>low &lt;= high</code> stayed true. '
           + 'Look at what you assign to low and high.</span>';
         R.className = 'result bad'; return;
       }
       if (got.err === 'oob'){
-        R.innerHTML = 'That version reads outside the array.'
+        R.innerHTML = 'NOT QUITE - that goes outside the array.'
           + '<span class="detail">Searching for ' + t + ' it tried <code>arr[' + got.mid
           + ']</code> in a list of ' + a.length + '. In Java that is an ArrayIndexOutOfBoundsException.</span>';
         R.className = 'result bad'; return;
       }
       if (got.idx !== want){
-        R.innerHTML = 'Wrong answer.'
+        R.innerHTML = 'NOT QUITE - wrong answer.'
           + '<span class="detail">Searching for <b>' + t + '</b> it returned <b>' + got.idx
           + '</b>, but the right answer is <b>' + want + '</b>'
           + (want === -1 ? ' (it is not in the list).' : '.') + '</span>';
@@ -462,17 +462,17 @@ $('runcode').onclick = () => {
       }
       const allowed = Math.floor(Math.log2(a.length)) + 1;
       if (got.passes > allowed){
-        R.innerHTML = 'Right answers, wrong algorithm.'
+        R.innerHTML = 'NOT QUITE - right answers, but that is not binary search.'
           + '<span class="detail">Searching for <b>' + t + '</b> in a list of ' + a.length
           + ' it took <b>' + got.passes + '</b> comparisons. Binary search should never need more than '
-          + allowed + '. Your version finds things by creeping one box at a time &mdash; that is linear '
-          + 'search in disguise. Check what mid is being set to.</span>';
+          + allowed + '. Your version moves one box at a time, which is really linear '
+          + 'search. Check what you set mid to.</span>';
         R.className = 'result bad'; return;
       }
     }
   }
   Object.keys(BLANKS).forEach(id => { if ($(id).value === BLANKS[id].right) $(id).classList.add('right'); });
-  R.innerHTML = 'Correct on every value in three different lists, and it returns -1 for values that are not there.'
+  R.innerHTML = 'CORRECT - it works on every value in three lists, and returns -1 for values that are not there.'
     + '<span class="detail">That is binary search.</span>';
   R.className = 'result ok';
 };

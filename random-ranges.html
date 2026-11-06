@@ -104,7 +104,7 @@ details.hint pre { margin:10px 0 0; }
 
 <main id="main">
   <h1 class="page-title">Random Ranges</h1>
-  <p class="page-lede">Eight targets. Write the Java that produces exactly that range &mdash; no wider, no narrower, not shifted. The number line underneath runs your expression a few thousand times and shows you what it actually lands on.</p>
+  <p class="page-lede">Eight ranges. Write the Java that gives you exactly that range. The number line below runs your expression a few thousand times and shows you every value it gives.</p>
 
   <div class="task-nav" id="tasknav"></div>
 
@@ -154,17 +154,17 @@ int value = (int)(Math.random() * (high - low + 1)) + low;
 Random rand = new Random();
 int value = rand.nextInt(high - low + 1) + low;
 </pre>
-      <p style="font-size:.86rem;color:var(--ink-soft);margin:10px 0 0">Work out the count first, then the shift. For <code>-3</code> to <code>8</code> the count is <code>8 - (-3) + 1 = 12</code>, so you want 12 values starting at <code>-3</code>.</p>
+      <p style="font-size:.86rem;color:var(--ink-soft);margin:10px 0 0">Figure out how many values you need first, then where they start. For <code>-3</code> to <code>8</code> the count is <code>8 - (-3) + 1 = 12</code>, so you want 12 values starting at <code>-3</code>.</p>
     </details>
 
     <div class="trap">
-      <b>The one that bites everybody</b>
-      <code>(int)Math.random() * 6</code> is legal Java and always gives 0. The cast grabs <code>Math.random()</code> by itself and chops it to 0 before the multiply ever happens. Try typing it in &mdash; the number line will show you one lonely bar.
+      <b>Watch out for this one</b>
+      <code>(int)Math.random() * 6</code> compiles, but it always gives 0. The cast only applies to <code>Math.random()</code>, so it becomes 0 before you multiply. Type it in and you will see one bar.
     </div>
   </section>
 
   <section class="card">
-    <h2>What the two tools actually give you</h2>
+    <h2>What each one gives you</h2>
     <table class="week-table" style="margin:0">
       <thead><tr><th style="width:46%">Expression</th><th style="width:22%">Smallest</th><th style="width:22%">Largest</th><th>Count</th></tr></thead>
       <tbody style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
@@ -173,7 +173,7 @@ int value = rand.nextInt(high - low + 1) + low;
         <tr><td>rand.nextInt(n)</td><td>0</td><td>n - 1</td><td>n</td></tr>
       </tbody>
     </table>
-    <p style="font-size:.86rem;color:var(--ink-soft);margin:12px 0 0">Both start at 0 and stop one short of the number you hand them. Everything else is addition.</p>
+    <p style="font-size:.86rem;color:var(--ink-soft);margin:12px 0 0">Both start at 0 and stop one before the number you give them. To shift the range, add.</p>
   </section>
 </main>
 
@@ -194,7 +194,7 @@ const TASKS = [
   {id:'r4', mode:'rand', lo:-100, hi:-50, ctx:'elevation below sea level'}
 ];
 const STARTER = {
-  math: '<span class="cm">// use Math.random() &mdash; no Random object</span>\n<span class="kw">int</span> value = <span class="cm">/* your expression */</span>;',
+  math: '<span class="cm">// use Math.random(), not a Random object</span>\n<span class="kw">int</span> value = <span class="cm">/* your expression */</span>;',
   rand: '<span class="cm">// a Random object named rand already exists</span>\n<span class="kw">import</span> java.util.Random;\nRandom rand = <span class="kw">new</span> Random();\n<span class="kw">int</span> value = <span class="cm">/* your expression */</span>;'
 };
 const SAMPLES = 4000, MAX_COLS = 160;
@@ -355,7 +355,7 @@ function drawNav(){
 function loadTask(){
   const t = TASKS[cur];
   $('want').textContent = t.lo + ' to ' + t.hi;
-  $('ctx').textContent = '— ' + t.ctx + ', ends included';
+  $('ctx').textContent = '(' + t.ctx + ', both ends included)';
   $('method').textContent = t.mode === 'math' ? 'Math.random()' : 'rand.nextInt( )';
   $('starter').innerHTML = STARTER[t.mode];
   $('rt').textContent = t.lo + ' .. ' + t.hi;
@@ -384,7 +384,7 @@ function drawLine(res){
   if (hi - lo + 1 > MAX_COLS){
     nl.innerHTML = '<p style="color:var(--ink-soft);font-size:.86rem;align-self:center">'
       + 'That range is ' + (res && res.range ? (res.range.hi - res.range.lo + 1) : (hi - lo + 1))
-      + ' values wide &mdash; too wide to draw. Check the count you passed in.</p>';
+      + ' values wide, which is too wide to draw. Check the number you passed in.</p>';
     return;
   }
 
@@ -427,7 +427,7 @@ function check(){
   try {
     ast = parse(src);
   } catch (e){
-    V.textContent = 'NOT QUITE — your syntax is wrong.';
+    V.textContent = 'NOT QUITE - your syntax is wrong.';
     V.className = 'verdict nope';
     if (typeof e.p === 'number') C.textContent = src.replace(/[^\t]/g, ' ').slice(0, e.p) + '^';
     I.className = 'bad';
@@ -437,11 +437,11 @@ function check(){
   }
 
   if (t.mode === 'math' && !usesKind(ast, 'rand')){
-    V.textContent = 'NOT QUITE — this one wants Math.random().'; V.className = 'verdict off';
+    V.textContent = 'NOT QUITE - use Math.random() for this one.'; V.className = 'verdict off';
     I.className = 'bad'; drawLine(null); return;
   }
   if (t.mode === 'rand' && !usesKind(ast, 'nextInt')){
-    V.textContent = 'NOT QUITE — this one wants rand.nextInt().'; V.className = 'verdict off';
+    V.textContent = 'NOT QUITE - use rand.nextInt() for this one.'; V.className = 'verdict off';
     I.className = 'bad'; drawLine(null); return;
   }
 
@@ -451,7 +451,7 @@ function check(){
     res = sample(ast, SAMPLES);
     res.range = exactRange(ast, srcs);
   } catch (e){
-    V.textContent = 'NOT QUITE — that asks nextInt() for a count that is not a positive whole number.';
+    V.textContent = 'NOT QUITE - nextInt() needs a positive whole number.';
     V.className = 'verdict nope'; I.className = 'bad'; drawLine(null); return;
   }
   if (!res.range){
@@ -461,7 +461,7 @@ function check(){
   }
 
   if (!res.allInt){
-    V.textContent = 'NOT QUITE — that is a double, and value is an int. Java will not assign it.';
+    V.textContent = 'NOT QUITE - that is a double, and value is an int. You need a cast.';
     V.className = 'verdict type'; I.className = 'bad';
     $('ry').textContent = 'not a whole number'; $('rh').innerHTML = '&mdash;';
     drawLine(null);
@@ -476,22 +476,22 @@ function check(){
 
   const exact = res.range.lo === t.lo && res.range.hi === t.hi && hit === want;
   if (exact){
-    V.textContent = 'That is it — ' + t.lo + ' to ' + t.hi + ', every value reachable.';
+    V.textContent = 'CORRECT - ' + t.lo + ' to ' + t.hi + ', and you can get every value.';
     V.className = 'verdict yes'; I.className = 'good';
     solved.add(t.id); drawNav();
   } else {
     I.className = 'bad';
     V.className = 'verdict off';
     if (res.range.lo === res.range.hi){
-      V.textContent = 'NOT QUITE — that always gives ' + res.range.lo + '. Look at where the cast lands.';
+      V.textContent = 'NOT QUITE - that always gives ' + res.range.lo + '. Check where your cast is.';
     } else if (hit < res.range.hi - res.range.lo + 1){
-      V.textContent = 'NOT QUITE — it skips values. You get ' + hit + ' different numbers, not ' + want + '.';
+      V.textContent = 'NOT QUITE - it skips values. You get ' + hit + ' different numbers, not ' + want + '.';
     } else if (res.range.hi - res.range.lo + 1 === want){
-      V.textContent = 'NOT QUITE — right width, wrong place. You are off by '
+      V.textContent = 'NOT QUITE - right number of values, but shifted. You are off by '
         + (t.lo - res.range.lo > 0 ? '+' : '') + (t.lo - res.range.lo) + '.';
     } else {
-      V.textContent = 'NOT QUITE — that is ' + (res.range.hi - res.range.lo + 1)
-        + ' values wide and you need ' + want + '.';
+      V.textContent = 'NOT QUITE - that gives ' + (res.range.hi - res.range.lo + 1)
+        + ' values and you need ' + want + '.';
     }
   }
 }
