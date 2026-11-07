@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AP CSA &middot; Monty Hall</title>
+  <link rel="stylesheet" href="styles.css" />
+<style>
+.card { border:1px solid var(--line); border-radius:var(--radius); background:var(--bg); padding:18px 20px; margin-bottom:18px; }
+.card h2 { font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin:0 0 4px; }
+.card .sub { color:var(--ink-soft); font-size:.9rem; margin:0 0 16px; max-width:70ch; }
+button.go { font:inherit; font-size:.88rem; font-weight:700; cursor:pointer; padding:8px 18px;
+  border:1px solid var(--brand); background:var(--brand); color:#fff; border-radius:8px; }
+button.go:hover { background:var(--brand-ink); border-color:var(--brand-ink); }
+
+/* ------------------------------------------------------------ doors */
+.doors { display:flex; gap:14px; justify-content:center; margin:6px 0 14px; }
+.door { flex:1 1 0; max-width:170px; height:clamp(140px, 34vw, 240px); position:relative; cursor:pointer;
+  border:3px solid var(--line); border-radius:10px 10px 4px 4px; background:var(--bg-subtle);
+  font:inherit; color:inherit; padding:0; overflow:hidden; transition:border-color .15s, transform .15s; }
+.door:disabled { cursor:default; opacity:1; }
+.door .prize { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(2.4rem, 9vw, 4.4rem); }
+.door .panel { position:absolute; inset:0; background:var(--c2); color:#fff; display:flex;
+  flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  transform-origin:left center; transition:transform .55s ease; }
+.door .panel .n { font-size:clamp(1.8rem, 6vw, 2.6rem); font-weight:800; line-height:1; }
+.door .panel .knob { position:absolute; right:12%; top:52%; width:10px; height:10px; border-radius:50%; background:#f3d36b; }
+.door.open .panel { transform:perspective(600px) rotateY(-80deg); }
+.door:not(:disabled):hover { transform:translateY(-3px); border-color:var(--brand); }
+.door.picked { border-color:var(--now-line); box-shadow:0 0 0 3px var(--now-line); }
+.door.win  { border-color:#2e8b4f; box-shadow:0 0 0 3px #2e8b4f; }
+.tag { text-align:center; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
+  min-height:1.3em; margin-top:6px; color:var(--now-ink); }
+.doorwrap { flex:1 1 0; max-width:170px; display:flex; flex-direction:column; }
+.doorwrap .door { flex:none; max-width:none; width:100%; }
+
+.say { text-align:center; font-size:1rem; font-weight:600; min-height:1.5em; margin:4px 0 12px; }
+.say.ok  { color:#2e8b4f; font-weight:800; }
+.say.bad { color:#c0392b; font-weight:800; }
+.choice { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; min-height:40px; }
+
+@media (prefers-reduced-motion: reduce){
+  .door .panel { transition:none; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="course-name">AP Computer Science A</span>
+      <span class="course-sub">2025&ndash;26</span>
+    </div>
+    <nav class="main-nav" aria-label="Main">
+      <a href="index.html">This Week</a>
+      <a href="topics.html">By Topic</a>
+      <a href="practice.html" aria-current="page">Practice</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <h1 class="page-title">Monty Hall</h1>
+  <p class="page-lede">Three doors. One has a car, two have goats.</p>
+
+  <section class="card">
+    <h2>Play it</h2>
+    <p class="sub">Pick a door. The host knows where the car is, and he opens one of the other doors that has a goat. Then you can stay with your door or switch.</p>
+
+    <div class="doors" id="doors"></div>
+    <div class="say" id="say">Pick a door.</div>
+    <div class="choice" id="choice"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  AP CSA &middot; <a href="index.html">This week</a> &middot; <a href="topics.html">By topic</a>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const rand3 = () => Math.floor(Math.random() * 3);
+
+/* ---------------------------------------------------------------- play */
+let car, pick, opened, phase;
+
+function buildDoors(){
+  const wrap = $('doors');
+  wrap.innerHTML = '';
+  for (let d = 0; d < 3; d++){
+    const w = document.createElement('div'); w.className = 'doorwrap';
+    const b = document.createElement('button');
+    b.className = 'door'; b.id = 'door' + d;
+    b.setAttribute('aria-label', 'Door ' + (d + 1));
+    b.innerHTML = '<span class="prize"></span><span class="panel"><span class="n">' + (d + 1) + '</span><span class="knob"></span></span>';
+    b.addEventListener('click', () => choose(d));
+    const t = document.createElement('div'); t.className = 'tag'; t.id = 'tag' + d;
+    w.appendChild(b); w.appendChild(t); wrap.appendChild(w);
+  }
+}
+
+function newGame(){
+  car = rand3(); pick = -1; opened = -1; phase = 'pick';
+  for (let d = 0; d < 3; d++){
+    const b = $('door' + d);
+    b.className = 'door'; b.disabled = false;
+    b.querySelector('.prize').textContent = d === car ? '🚗' : '🐐';
+    $('tag' + d).textContent = '';
+  }
+  $('say').className = 'say'; $('say').textContent = 'Pick a door.';
+  $('choice').innerHTML = '';
+}
+
+function openDoor(d){ $('door' + d).classList.add('open'); }
+
+function choose(d){
+  if (phase !== 'pick') return;
+  pick = d; phase = 'decide';
+  const goats = [0, 1, 2].filter(x => x !== pick && x !== car);
+  opened = goats[Math.floor(Math.random() * goats.length)];
+  for (let x = 0; x < 3; x++) $('door' + x).disabled = true;
+  $('door' + pick).classList.add('picked');
+  $('tag' + pick).textContent = 'your pick';
+  setTimeout(() => {
+    openDoor(opened);
+    $('tag' + opened).textContent = 'host opened';
+    const other = 3 - pick - opened;
+    $('say').textContent = 'The host opened door ' + (opened + 1) + '. It is a goat. Stay or switch?';
+    const c = $('choice'); c.innerHTML = '';
+    const s = document.createElement('button'); s.className = 'go';
+    s.textContent = 'Stay with door ' + (pick + 1);
+    s.addEventListener('click', () => finish(false));
+    const w = document.createElement('button'); w.className = 'go';
+    w.textContent = 'Switch to door ' + (other + 1);
+    w.addEventListener('click', () => finish(true));
+    c.appendChild(s); c.appendChild(w);
+  }, 450);
+}
+
+function finish(switched){
+  if (phase !== 'decide') return;
+  phase = 'done';
+  const other = 3 - pick - opened;
+  if (switched){
+    $('door' + pick).classList.remove('picked'); $('tag' + pick).textContent = '';
+    pick = other;
+    $('door' + pick).classList.add('picked'); $('tag' + pick).textContent = 'your pick';
+  }
+  for (let d = 0; d < 3; d++) openDoor(d);
+  const won = pick === car;
+  $('door' + car).classList.add('win');
+  const how = switched ? 'You switched' : 'You stayed';
+  $('say').className = 'say ' + (won ? 'ok' : 'bad');
+  $('say').textContent = won ? how + ' and won the car.' : how + ' and got a goat. The car was behind door ' + (car + 1) + '.';
+  const c = $('choice'); c.innerHTML = '';
+  const again = document.createElement('button'); again.className = 'go';
+  again.textContent = 'Play again';
+  again.addEventListener('click', newGame);
+  c.appendChild(again);
+}
+
+buildDoors(); newGame();
+</script>
+</body>
+</html>
