@@ -162,7 +162,27 @@ table.trace th { background:var(--bg-subtle); font-family:-apple-system,BlinkMac
 
 <main id="main">
   <h1 class="page-title">ArrayList Basics</h1>
-  <p class="page-lede">Declare it, make it, and use every method: <code>add</code>, <code>add(index, value)</code>, <code>get</code>, <code>set</code>, <code>remove</code>, <code>size</code>. Clear all six levels and you are ready to code it for real.</p>
+  <p class="page-lede">Declare it, make it, and use every method: <code>add</code>, <code>add(index, value)</code>, <code>get</code>, <code>set</code>, <code>remove</code>, <code>size</code>. Start with the quick prep on wrapper classes, then clear all six levels and you are ready to code it for real.</p>
+
+  <section class="card" id="prep">
+    <h2>Prep: wrapper classes</h2>
+    <p class="sub" style="color:var(--ink)">An ArrayList can only hold <b>objects</b>. <code>int</code>, <code>double</code> and <code>boolean</code> are primitives, not objects. So Java gives each one a <b>wrapper class</b>, an object that holds one of them:</p>
+    <table class="trace" style="margin:0 0 12px">
+      <tr><th>Primitive</th><th>Wrapper class</th><th>ArrayList</th></tr>
+      <tr><td>int</td><td>Integer</td><td>ArrayList&lt;Integer&gt;</td></tr>
+      <tr><td>double</td><td>Double</td><td>ArrayList&lt;Double&gt;</td></tr>
+      <tr><td>boolean</td><td>Boolean</td><td>ArrayList&lt;Boolean&gt;</td></tr>
+    </table>
+    <p class="sub" style="color:var(--ink)">You still add and get plain numbers. Java wraps the int in an Integer on the way in (<b>autoboxing</b>) and unwraps it on the way out (<b>unboxing</b>).</p>
+    <pre class="code">ArrayList&lt;Integer&gt; scores = new ArrayList&lt;Integer&gt;();
+scores.add(90);              // 90 gets boxed into an Integer
+int first = scores.get(0);   // unboxed back to an int</pre>
+    <p class="sub" style="color:var(--ink)"><b>Watch out:</b> with an <code>ArrayList&lt;Integer&gt;</code>, <code>scores.remove(2)</code> removes <b>index</b> 2, not the number 2.</p>
+    <div class="btns" style="margin-bottom:14px"><button class="alt" id="prepLab">See it in the Memory Lab</button></div>
+    <p class="prompt">Quick check: does it compile?</p>
+    <div id="prepQs"></div>
+    <div class="verdict" id="prepV"></div>
+  </section>
 
   <section class="card" id="lab">
     <h2>Memory Lab</h2>
@@ -1521,6 +1541,38 @@ function l6(card, L) {
 }
 
 /* =====================================================================
+   Prep: wrapper classes
+   ===================================================================== */
+const PREP_QS = [
+  "ArrayList<int> nums = new ArrayList<int>();",
+  "ArrayList<Integer> nums = new ArrayList<Integer>();",
+  "ArrayList<double> prices = new ArrayList<double>();",
+  "ArrayList<Double> prices = new ArrayList<>();",
+  "ArrayList<Integer> nums = new ArrayList<Integer>();\nnums.add(7);\nint x = nums.get(0);",
+];
+function prepCompiles(src) { try { new Machine().run(src); return { ok: true }; } catch (e) { if (e instanceof JErr) return { ok: false, err: e }; throw e; } }
+function prepInit() {
+  $("prepQs").innerHTML = PREP_QS.map((s, i) =>
+    '<div class="prepq" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0">' +
+    '<pre class="code" style="margin:0;flex:1 1 320px">' + esc(s) + "</pre>" +
+    '<span class="btns" style="margin:0"><button class="alt" data-i="' + i + '" data-a="1">Compiles</button><button class="alt" data-i="' + i + '" data-a="0">Does not</button></span>' +
+    '<div class="expl" id="prepx' + i + '" style="flex-basis:100%;margin:0"></div></div>').join("");
+  $("prepQs").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    const i = +b.dataset.i, said = b.dataset.a === "1", r = prepCompiles(PREP_QS[i]);
+    const ok = said === r.ok;
+    b.parentElement.querySelectorAll("button").forEach((x) => (x.disabled = true));
+    b.style.borderColor = ok ? "#2e8b4f" : "#c0392b";
+    const x = $("prepx" + i);
+    x.innerHTML = '<b style="color:' + (ok ? "#2e8b4f" : "#c0392b") + '">' + (ok ? "CORRECT" : "NOT QUITE") + "</b> - " +
+      (r.ok ? "it compiles." + (/add\(7\)/.test(PREP_QS[i]) ? " 7 is boxed into an Integer going in and unboxed coming out." : /<>\(\)/.test(PREP_QS[i]) ? " The empty <> on the right picks up Double from the left." : "")
+            : "Java says: " + esc(r.err.message) + ".");
+  });
+  $("prepLab").onclick = () => { labEdit(); $("labCode").value = PRESETS[4][1]; $("labAll").click(); $("lab").scrollIntoView({ behavior: "smooth" }); };
+}
+prepInit();
+
+/* =====================================================================
    boot
    ===================================================================== */
 $("levelNav").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) showLevel(+b.dataset.i); });
@@ -1606,6 +1658,7 @@ if (/[?&]selftest/.test(location.search)) {
   t("L4 cast trap caught", () => !l4Judge("songs.get((int)Math.random() * songs.size())").ok || "bad");
   // L6 generator
   t("L6 generator", () => { for (let k = 0; k < 200; k++) { const Q = l6Make(); if (!Q.out.length) return "no output"; } return true; });
+  t("prep answers", () => { const want = [false, true, false, true, true]; for (let i = 0; i < PREP_QS.length; i++) if (prepCompiles(PREP_QS[i]).ok !== want[i]) return "q" + i; return true; });
   // render
   t("render memory", () => { const d = document.createElement("div"); document.body.appendChild(d); PRESETS.forEach((p) => renderMemory(d, memOf(p[1]))); d.remove(); return true; });
   const fails = R.filter((x) => x.startsWith("FAIL"));
