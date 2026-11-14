@@ -1,0 +1,1617 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AP CSA &middot; ArrayList Basics</title>
+  <link rel="stylesheet" href="styles.css" />
+<style>
+.task-nav { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 18px; }
+.task-nav button { font:inherit; font-size:.82rem; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--bg-subtle); color:var(--ink-soft); padding:6px 12px; border-radius:999px; }
+.task-nav button[aria-current="true"] { background:var(--brand-bg); border-color:var(--brand); color:var(--brand-ink); }
+.task-nav button.done::after { content:" \2713"; color:#2e8b4f; font-weight:800; }
+.card { border:1px solid var(--line); border-radius:var(--radius); background:var(--bg); padding:18px 20px; margin-bottom:18px; }
+.card h2 { font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin:0 0 4px; }
+.card .sub { color:var(--ink-soft); font-size:.92rem; margin:0 0 14px; max-width:72ch; }
+.mono, pre.code, .answer-row, textarea.code-in { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+pre.code { background:var(--bg-subtle); border:1px solid var(--line); border-radius:8px; padding:12px 14px;
+  overflow-x:auto; margin:10px 0; font-size:.9rem; line-height:1.6; }
+.prompt { font-size:1.05rem; font-weight:700; margin:4px 0 6px; max-width:72ch; }
+.prompt code, .sub code, .expl code, .verdict code { background:var(--chip-bg); border-radius:4px; padding:1px 5px; font-size:.88em; }
+.answer-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:.95rem; margin-top:8px; }
+.answer-row label { font-family:inherit; font-size:.85rem; font-weight:700; color:var(--ink-soft); min-width:110px; }
+.answer-row input, textarea.code-in { flex:1 1 300px; min-width:220px; font:inherit; padding:9px 12px;
+  border:2px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); }
+.answer-row input:focus, textarea.code-in:focus { outline:none; border-color:var(--brand); }
+.answer-row input:disabled { opacity:.45; }
+textarea.code-in { width:100%; font-size:.9rem; line-height:1.6; resize:vertical; box-sizing:border-box; }
+button.go, button.alt { font:inherit; font-size:.88rem; font-weight:700; cursor:pointer; padding:8px 16px; border-radius:8px; }
+button.go { border:1px solid var(--brand); background:var(--brand); color:#fff; }
+button.go:hover { background:var(--brand-ink); border-color:var(--brand-ink); }
+button.alt { border:1px solid var(--line); background:var(--bg-subtle); color:var(--ink); }
+button.alt:hover { border-color:var(--brand); }
+button.alt[aria-pressed="true"] { background:#fdecea; border-color:#c0392b; color:#c0392b; }
+.btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; align-items:center; }
+.verdict { margin-top:12px; font-size:.95rem; min-height:1.4em; max-width:78ch; }
+.verdict.nope { color:#c0392b; font-weight:700; }
+.verdict.yes { color:#2e8b4f; font-weight:700; }
+.caret { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:#c0392b; white-space:pre; font-size:.95rem; margin-top:2px; }
+.expl { margin-top:8px; font-size:.92rem; max-width:78ch; color:var(--ink); }
+.prog { display:flex; align-items:center; gap:10px; font-size:.82rem; color:var(--ink-soft); font-weight:700; margin-bottom:10px; }
+.prog .bar { flex:0 0 160px; height:8px; background:var(--chip-bg); border-radius:999px; overflow:hidden; }
+.prog .bar i { display:block; height:100%; background:#2e8b4f; border-radius:999px; transition:width .3s; }
+.cleared { background:#e8f5ec; border:1px solid #2e8b4f; color:#1f6b3a; border-radius:8px; padding:10px 14px; font-weight:700; margin-top:12px; }
+:root:not([data-theme="light"]) .cleared { }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cleared { background:#15301f; color:#8fd6a6; } :root:not([data-theme="light"]) button.alt[aria-pressed="true"] { background:#3a1714; } }
+:root[data-theme="dark"] .cleared { background:#15301f; color:#8fd6a6; }
+.opts { display:flex; flex-direction:column; gap:8px; margin-top:10px; max-width:640px; }
+.opts button { text-align:left; font:inherit; font-size:.95rem; padding:10px 14px; border:2px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); cursor:pointer; }
+.opts button:hover:not(:disabled) { border-color:var(--brand); }
+.opts button:disabled { cursor:default; }
+.opts button.right { border-color:#2e8b4f; background:#e8f5ec; color:#1f6b3a; font-weight:700; }
+.opts button.wrong { border-color:#c0392b; background:#fdecea; color:#c0392b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .opts button.right { background:#15301f; color:#8fd6a6; } :root:not([data-theme="light"]) .opts button.wrong { background:#3a1714; color:#ff9b8f; } }
+.opts code { font-size:.9em; }
+
+/* ---------------------------------------------------------- list view */
+.lv { display:inline-flex; gap:4px; align-items:flex-end; flex-wrap:wrap; margin:6px 0; }
+.lv .cell { display:flex; flex-direction:column; align-items:center; }
+.lv .cell b { min-width:44px; height:32px; padding:0 8px; display:flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--c8); border-radius:6px; background:var(--bg); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.88rem; font-weight:600; }
+.lv .cell.chg b { background:var(--now-bg); border-color:var(--now-line); }
+.lv .cell i { font-style:normal; font-size:.7rem; color:var(--ink-soft); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.lv .emp { font-size:.85rem; color:var(--ink-soft); font-style:italic; padding:6px 0; }
+.lvrow { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.lvrow .lab { font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); min-width:56px; }
+
+/* ---------------------------------------------------------- memory diagram */
+.mem { position:relative; display:grid; grid-template-columns:minmax(150px, 230px) 1fr; gap:36px;
+  padding:14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--bg-subtle); margin-top:12px; }
+@media (max-width:640px) { .mem { grid-template-columns:1fr; gap:26px; } }
+.mem svg.arrows { position:absolute; left:0; top:0; pointer-events:none; overflow:visible; }
+.mem .arr { fill:none; stroke:var(--brand); stroke-width:2; }
+.mem .arr.draw { stroke-dasharray:1; stroke-dashoffset:1; animation:draw .7s ease forwards; }
+.mem .ah { fill:var(--brand); }
+@keyframes draw { to { stroke-dashoffset:0; } }
+.mh { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; font-weight:800; color:var(--ink-soft); margin-bottom:10px; }
+.mh small { text-transform:none; letter-spacing:0; font-weight:600; }
+.mem .none { font-size:.82rem; color:var(--ink-soft); font-style:italic; }
+.var { display:grid; grid-template-columns:1fr auto; align-items:center; gap:0 10px; background:var(--bg); border:1px solid var(--line);
+  border-radius:8px; padding:6px 10px; margin-bottom:8px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.var .vt { grid-column:1 / -1; font-size:.7rem; color:var(--ink-soft); }
+.var .vn { font-weight:700; font-size:.92rem; overflow-wrap:anywhere; }
+.var .vv { min-width:36px; height:28px; padding:0 6px; border:1.5px solid var(--line); border-radius:6px; display:flex; align-items:center; justify-content:center; background:var(--bg-subtle); font-size:.85rem; }
+.dot { width:11px; height:11px; border-radius:50%; background:var(--brand); display:inline-block; }
+.nul { color:var(--ink-soft); font-style:italic; }
+.nov { color:var(--ink-soft); }
+.hrow { display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; }
+.hrow.elems { margin-top:46px; }
+.obj { background:var(--bg); border:1.5px solid var(--oc, var(--c2)); border-radius:8px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.82rem; min-width:64px; overflow:hidden; }
+.obj .oh { font-size:.68rem; font-weight:800; padding:3px 8px; background:var(--oc, var(--c2)); color:#fff; display:flex; justify-content:space-between; gap:10px; }
+.obj .ob { padding:6px 8px; }
+.obj .fld { display:flex; gap:8px; justify-content:space-between; font-size:.78rem; }
+.obj .fld span { color:var(--ink-soft); }
+.obj.k-ArrayList { --oc:var(--c8); }
+.obj.k-Name { --oc:var(--c2); }
+.obj.k-String { --oc:var(--c5); }
+.obj.k-Integer, .obj.k-Double { --oc:var(--c7); }
+.obj.k-Random { --oc:var(--c9); }
+.slots { display:flex; gap:4px; padding:6px 8px; flex-wrap:wrap; }
+.slot { display:flex; flex-direction:column; align-items:center; }
+.slot .sv { min-width:32px; height:28px; padding:0 5px; border:1.5px solid var(--line); border-radius:5px; display:flex; align-items:center; justify-content:center; background:var(--bg-subtle); }
+.slot .ix { font-size:.66rem; color:var(--ink-soft); }
+.slot.flash .sv { animation:flash 1.2s ease; }
+@keyframes flash { 0%,40% { background:var(--now-bg); border-color:var(--now-line); } }
+.obj .empty { padding:6px 8px; font-size:.75rem; color:var(--ink-soft); font-style:italic; }
+.obj.gc { opacity:.45; border-style:dashed; }
+.obj.gc .gcl { display:block; font-size:.64rem; padding:2px 8px 4px; color:var(--ink-soft); font-family:inherit; }
+.fresh { animation:pop .45s ease; }
+@keyframes pop { from { transform:scale(.6); opacity:0; } to { transform:none; opacity:1; } }
+@media (prefers-reduced-motion: reduce) { .fresh, .slot.flash .sv, .mem .arr.draw { animation:none; stroke-dashoffset:0; } }
+.legend { display:flex; gap:16px; flex-wrap:wrap; font-size:.76rem; color:var(--ink-soft); margin-top:8px; }
+
+/* ---------------------------------------------------------- lab */
+.presets { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+.presets button { font:inherit; font-size:.78rem; font-weight:600; cursor:pointer; border:1px solid var(--line); background:var(--bg-subtle); color:var(--ink-soft); padding:5px 10px; border-radius:999px; }
+.presets button:hover { border-color:var(--brand); color:var(--brand-ink); }
+.codeview { background:var(--bg-subtle); border:1px solid var(--line); border-radius:8px; padding:8px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.9rem; line-height:1.6; overflow-x:auto; }
+.codeview div { padding:0 14px; white-space:pre; border-left:4px solid transparent; }
+.codeview .ran { color:var(--ink-soft); }
+.codeview .next { background:var(--brand-bg); border-left-color:var(--brand); }
+.codeview .err { background:#fdecea; border-left-color:#c0392b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .codeview .err { background:#3a1714; } }
+.console { margin-top:10px; background:#111418; color:#e6e6e6; border-radius:8px; padding:8px 12px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.85rem; min-height:1.6em; white-space:pre-wrap; }
+.console .lbl { color:#8a93a3; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; display:block; }
+
+/* ---------------------------------------------------------- random bars */
+.bars { display:flex; gap:10px; align-items:flex-end; height:130px; border-bottom:2px solid var(--line); padding:0 4px; margin-top:10px; }
+.bars .b { flex:1 1 0; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+.bars .b i { display:block; width:100%; background:var(--brand); border-radius:3px 3px 0 0; }
+.bars .b.zero i { background:transparent; border-top:2px dashed #c0392b; }
+.bars .b.bad i { background:#d9534f; }
+.bars .b span { font-size:.72rem; font-weight:700; margin-bottom:2px; }
+.barlab { display:flex; gap:10px; padding:4px 4px 0; }
+.barlab span { flex:1 1 0; text-align:center; font-size:.72rem; color:var(--ink-soft); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; overflow-wrap:anywhere; }
+.round { margin-top:14px; }
+.round h3 { font-size:.85rem; margin:0; }
+
+table.trace { border-collapse:collapse; margin-top:10px; font-size:.85rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+table.trace th, table.trace td { border:1px solid var(--line); padding:4px 10px; text-align:left; vertical-align:top; }
+table.trace th { background:var(--bg-subtle); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; }
+.final { border:2px solid #2e8b4f; }
+.final h2 { color:#2e8b4f; }
+#selftest { white-space:pre-wrap; font-family:ui-monospace,monospace; font-size:.8rem; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="course-name">AP Computer Science A</span>
+      <span class="course-sub">2025&ndash;26</span>
+    </div>
+    <nav class="main-nav" aria-label="Main">
+      <a href="index.html">This Week</a>
+      <a href="topics.html">By Topic</a>
+      <a href="practice.html" aria-current="page">Practice</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <h1 class="page-title">ArrayList Basics</h1>
+  <p class="page-lede">Declare it, make it, and use every method: <code>add</code>, <code>add(index, value)</code>, <code>get</code>, <code>set</code>, <code>remove</code>, <code>size</code>. Clear all six levels and you are ready to code it for real.</p>
+
+  <section class="card" id="lab">
+    <h2>Memory Lab</h2>
+    <p class="sub">Write Java and step through it one line at a time. A <b>reference</b> goes on the <b>stack</b>. An <b>object</b> made with <code>new</code> goes on the <b>heap</b>. Each arrow is a reference pointing at its object. Try the examples, then change them.</p>
+    <div class="presets" id="presets"></div>
+    <textarea class="code-in" id="labCode" rows="9" spellcheck="false" autocomplete="off" aria-label="Java code"></textarea>
+    <div class="codeview" id="labView" hidden></div>
+    <div class="btns">
+      <button class="go" id="labStep">Step</button>
+      <button class="alt" id="labAll">Run all</button>
+      <button class="alt" id="labReset">Edit code</button>
+    </div>
+    <div class="verdict" id="labMsg"></div>
+    <div class="console" id="labOut"><span class="lbl">Console</span></div>
+    <div id="labMem"></div>
+    <div class="legend"><span>Strings inside a <code>Name</code> are drawn inside the box to save space. They are objects too.</span></div>
+  </section>
+
+  <nav class="task-nav" id="levelNav" aria-label="Levels"></nav>
+  <div id="levels"></div>
+
+  <section class="card final" id="finalCard" hidden>
+    <h2>Locked in</h2>
+    <p class="prompt">All six levels cleared. You know how to make an ArrayList, use every method, pick a random item, and tell a reference from an object.</p>
+    <p class="sub">Now open <b>s1-w15</b> and we will write <code>Friends</code> together.</p>
+  </section>
+
+  <section class="card" id="selftestCard" hidden><h2>Self test</h2><div id="selftest"></div></section>
+</main>
+
+<footer class="site-footer">
+  AP CSA &middot; <a href="index.html">This week</a> &middot; <a href="topics.html">By topic</a> &middot; <a href="practice.html">Practice</a>
+</footer>
+
+<script>
+"use strict";
+/* =====================================================================
+   helpers
+   ===================================================================== */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function sample(pool, n) { return shuffle(pool).slice(0, n); }
+const q = (s) => '"' + s + '"';
+
+/* =====================================================================
+   A small Java interpreter: enough for ArrayList, Name, Random, String
+   ===================================================================== */
+class JErr extends Error { constructor(kind, msg, col) { super(msg); this.kind = kind; this.col = col; } }
+const syn = (m, c) => new JErr("syntax", m, c);
+const cerr = (m, c) => new JErr("compile", m, c);
+const rerr = (m, c) => new JErr("runtime", m, c);
+
+function tokenize(src) {
+  const toks = []; let i = 0;
+  while (i < src.length) {
+    const c = src[i];
+    if (/\s/.test(c)) { i++; continue; }
+    if (c === "/" && src[i + 1] === "/") { while (i < src.length && src[i] !== "\n") i++; continue; }
+    if (/[A-Za-z_$]/.test(c)) { let j = i; while (j < src.length && /[A-Za-z0-9_$]/.test(src[j])) j++; toks.push({ t: "id", v: src.slice(i, j), c: i }); i = j; continue; }
+    if (/[0-9]/.test(c)) { let j = i; while (j < src.length && /[0-9.]/.test(src[j])) j++; toks.push({ t: "num", v: src.slice(i, j), c: i }); i = j; continue; }
+    if (c === '"') {
+      let j = i + 1; while (j < src.length && src[j] !== '"' && src[j] !== "\n") j++;
+      if (src[j] !== '"') throw syn("this String is missing its closing quote", i);
+      toks.push({ t: "str", v: src.slice(i + 1, j), c: i }); i = j + 1; continue;
+    }
+    if (c === "'") throw syn("Strings use double quotes \" \", not single quotes", i);
+    if ("<>(){}[].,;=+-*/%!".includes(c)) { toks.push({ t: "op", v: c, c: i }); i++; continue; }
+    throw syn("unexpected character " + c, i);
+  }
+  toks.push({ t: "eof", v: "", c: src.replace(/\s+$/, "").length });
+  return toks;
+}
+
+const CLASSES = new Set(["ArrayList", "Name", "Random", "String", "Integer", "Double", "Object"]);
+const PRIM = new Set(["int", "double", "boolean", "char"]);
+const KNOWN = new Set(["int", "double", "boolean", "char", "String", "Integer", "Double", "Boolean", "Name", "Random", "ArrayList", "Object"]);
+const CASEFIX = { string: "String", arraylist: "ArrayList", name: "Name", random: "Random", integer: "Integer", double: "Double", object: "Object" };
+const WRAP = { int: "Integer", double: "Double", boolean: "Boolean", char: "Character" };
+
+class Parser {
+  constructor(src) { this.src = src; this.toks = tokenize(src); this.p = 0; }
+  peek(k = 0) { return this.toks[Math.min(this.p + k, this.toks.length - 1)]; }
+  next() { return this.toks[this.p++]; }
+  is(v) { const t = this.peek(); return t.t !== "str" && t.v === v; }
+  program() { const out = []; while (this.peek().t !== "eof") out.push(this.statement()); return out; }
+  semi() {
+    if (!this.is(";")) throw syn("missing ; at the end of the line", this.peek().t === "eof" ? this.peek().c : this.peek().c);
+    this.next();
+  }
+  type() {
+    const t = this.peek(); if (t.t !== "id") throw syn("expected a type", t.c); this.next();
+    const ty = { name: t.v, c: t.c };
+    if (this.is("<")) {
+      this.next();
+      if (this.is(">")) { this.next(); ty.diamond = true; }
+      else { ty.arg = this.type(); if (!this.is(">")) throw syn("missing > to close the < >", this.peek().c); this.next(); }
+    }
+    if (this.is("[")) { this.next(); if (!this.is("]")) throw syn("expected ]", this.peek().c); this.next(); ty.array = true; }
+    return ty;
+  }
+  statement() {
+    const start = this.peek();
+    if (start.t === "id" && !["new", "null", "true", "false"].includes(start.v)) {
+      const save = this.p; let ty = null;
+      try { ty = this.type(); } catch (e) { ty = null; }
+      if (ty && this.peek().t === "id") {
+        const nameTok = this.next();
+        if (this.is("=") || this.is(";")) {
+          let init = null;
+          if (this.is("=")) { this.next(); init = this.expr(); }
+          this.semi();
+          return { k: "decl", ty, name: nameTok.v, init, c: start.c, nc: nameTok.c };
+        }
+        throw syn("expected = or ; after the variable name " + nameTok.v, this.peek().c);
+      }
+      this.p = save;
+    }
+    const e = this.expr();
+    if (this.is("=")) {
+      this.next();
+      if (e.k !== "var") {
+        if (e.k === "call" && e.name === "get") throw cerr("you cannot assign to get(...). To change a slot use set(index, value)", e.c);
+        throw cerr("the left side of = has to be a variable", e.c);
+      }
+      const rhs = this.expr(); this.semi();
+      return { k: "assign", name: e.name, rhs, c: start.c, nc: e.c };
+    }
+    this.semi();
+    return { k: "expr", e, c: start.c };
+  }
+  expr() { return this.add(); }
+  add() { let l = this.mul(); while (this.is("+") || this.is("-")) { const o = this.next(); l = { k: "bin", op: o.v, l, r: this.mul(), c: o.c }; } return l; }
+  mul() { let l = this.unary(); while (this.is("*") || this.is("/") || this.is("%")) { const o = this.next(); l = { k: "bin", op: o.v, l, r: this.unary(), c: o.c }; } return l; }
+  unary() {
+    if (this.is("-")) { const t = this.next(); return { k: "neg", e: this.unary(), c: t.c }; }
+    if (this.is("(") && this.peek(1).t === "id" && (this.peek(1).v === "int" || this.peek(1).v === "double") && this.peek(2).v === ")") {
+      const t = this.next(); const ty = this.next().v; this.next();
+      return { k: "cast", ty, e: this.unary(), c: t.c };
+    }
+    return this.postfix();
+  }
+  args() {
+    this.next(); const a = [];
+    if (!this.is(")")) { for (;;) { a.push(this.expr()); if (this.is(",")) { this.next(); continue; } break; } }
+    if (!this.is(")")) throw syn("missing ) to close the call", this.peek().c);
+    this.next(); return a;
+  }
+  postfix() {
+    let e = this.primary();
+    for (;;) {
+      if (this.is(".")) {
+        this.next(); const id = this.peek();
+        if (id.t !== "id") throw syn("expected a method name after the dot", id.c);
+        this.next();
+        if (this.is("(")) e = { k: "call", recv: e, name: id.v, args: this.args(), c: id.c };
+        else e = { k: "field", recv: e, name: id.v, c: id.c };
+      } else if (this.is("[")) {
+        throw cerr("ArrayLists do not use [ ]. Use get(index) to read a slot and set(index, value) to change one", this.peek().c);
+      } else break;
+    }
+    return e;
+  }
+  primary() {
+    const t = this.peek();
+    if (t.t === "num") { this.next(); return t.v.includes(".") ? { k: "dbl", v: parseFloat(t.v), c: t.c } : { k: "int", v: parseInt(t.v, 10), c: t.c }; }
+    if (t.t === "str") { this.next(); return { k: "str", v: t.v, c: t.c }; }
+    if (t.t === "id") {
+      if (t.v === "null") { this.next(); return { k: "null", c: t.c }; }
+      if (t.v === "true" || t.v === "false") { this.next(); return { k: "bool", v: t.v === "true", c: t.c }; }
+      if (t.v === "new") {
+        this.next(); const ty = this.type();
+        if (ty.array) throw cerr("new " + ty.name + "[ ] makes an array, not an ArrayList", ty.c);
+        if (!this.is("(")) throw syn("after new " + typeStr(ty) + " you need ( )", this.peek().c);
+        return { k: "new", ty, args: this.args(), c: t.c };
+      }
+      if (CLASSES.has(t.v) && (this.peek(1).v === "<" || this.peek(1).v === "(") && this.peek(1).t === "op")
+        throw cerr("missing new. To make an object write new " + t.v + (this.peek(1).v === "<" ? "<...>" : "") + "( )", t.c);
+      this.next(); return { k: "var", name: t.v, c: t.c };
+    }
+    if (t.v === "(") { this.next(); const e = this.expr(); if (!this.is(")")) throw syn("missing )", this.peek().c); this.next(); return e; }
+    if (t.t === "eof") throw syn("the line ends too early", t.c);
+    throw syn("unexpected " + t.v, t.c);
+  }
+}
+function typeStr(ty) { return ty.name + (ty.arg ? "<" + typeStr(ty.arg) + ">" : ty.diamond ? "<>" : "") + (ty.array ? "[]" : ""); }
+const elemOf = (t) => { const m = /^ArrayList<(.+)>$/.exec(t); return m ? m[1] : "Object"; };
+const isList = (t) => /^ArrayList/.test(t);
+function hashHex() { return (0x10000000 + Math.floor(Math.random() * 0x6fffffff)).toString(16); }
+function caseFixed(s, col) {
+  const t = s.toLowerCase().trim();
+  if (t.length === 0) throw rerr("java.lang.StringIndexOutOfBoundsException: a Name part cannot be empty", col);
+  return t.slice(0, 1).toUpperCase() + t.slice(1);
+}
+function javaDouble(v) { if (Number.isInteger(v)) return v.toFixed(1); return String(v); }
+
+class Machine {
+  constructor() { this.vars = new Map(); this.order = []; this.heap = new Map(); this.nid = 1; this.out = []; this.step = 0; this.notes = []; }
+  alloc(o) { o.id = this.nid++; o.born = this.step; o.hash = hashHex(); this.heap.set(o.id, o); return { k: "ref", id: o.id }; }
+  obj(v) { return this.heap.get(v.id); }
+  str(s, intern = true) {
+    if (intern) for (const o of this.heap.values()) if (o.cls === "String" && o.interned && o.s === s && !o.gcAt) return { k: "ref", id: o.id };
+    return this.alloc({ cls: "String", s, interned: intern });
+  }
+  box(prim, v) {
+    if (prim === "int") {
+      if (v.v >= -128 && v.v <= 127) for (const o of this.heap.values()) if (o.cls === "Integer" && o.n === v.v && !o.gcAt) return { k: "ref", id: o.id };
+      return this.alloc({ cls: "Integer", n: v.v });
+    }
+    if (prim === "double") return this.alloc({ cls: "Double", n: v.v });
+    return v;
+  }
+  unbox(v, c, to) {
+    if (v.k === "null") throw rerr("java.lang.NullPointerException: cannot unbox null", c);
+    const o = this.obj(v);
+    if (to === "double") return { k: "double", v: o.n };
+    return { k: o.cls === "Double" ? "double" : "int", v: o.n };
+  }
+  toStr(v) {
+    if (v == null) return "null";
+    if (v.k === "null") return "null";
+    if (v.k === "int") return String(v.v);
+    if (v.k === "double") return javaDouble(v.v);
+    if (v.k === "bool") return String(v.v);
+    const o = this.obj(v);
+    switch (o.cls) {
+      case "String": return o.s;
+      case "Integer": return String(o.n);
+      case "Double": return javaDouble(o.n);
+      case "Name": return "Name@" + o.hash;
+      case "Random": return "java.util.Random@" + o.hash;
+      case "ArrayList": return "[" + o.items.map((x) => this.toStr(x)).join(", ") + "]";
+    }
+    return "Object@" + o.hash;
+  }
+  canon(ty, allowDiamond) {
+    if (ty.array) throw cerr(typeStr(ty) + " is an array. An ArrayList is declared like ArrayList<String> names", ty.c);
+    const n = ty.name;
+    if (!KNOWN.has(n)) {
+      const low = n.toLowerCase();
+      if (CASEFIX[low]) throw cerr("cannot find symbol: class " + n + ". Java is case sensitive. Did you mean " + CASEFIX[low] + "?", ty.c);
+      if (low === "list") throw cerr("for this practice declare it as an ArrayList, like ArrayList<String> names", ty.c);
+      throw cerr("cannot find symbol: class " + n, ty.c);
+    }
+    if (n === "ArrayList") {
+      if (ty.diamond) { if (allowDiamond) return "ArrayList<>"; throw cerr("the < > on the left side needs a type in it, like ArrayList<String>", ty.c); }
+      if (!ty.arg) return "ArrayList";
+      const a = ty.arg;
+      if (PRIM.has(a.name)) throw cerr("unexpected type. An ArrayList can only hold objects, not " + a.name + ". Use " + WRAP[a.name] + " instead", a.c);
+      return "ArrayList<" + this.canon(a, false) + ">";
+    }
+    if (ty.arg || ty.diamond) throw cerr(n + " does not take < >", ty.c);
+    return n;
+  }
+  coerce(target, r, c) {
+    const s = r.type;
+    if (s === "void") throw cerr("that method does not give back a value, so there is nothing to store", c);
+    if (target === s) return r.val;
+    if (s === "null") { if (PRIM.has(target)) throw cerr("incompatible types: null cannot be converted to " + target, c); return r.val; }
+    if (isList(target) && isList(s)) {
+      if (s === "ArrayList<>") { this.obj(r.val).elem = elemOf(target); return r.val; }
+      if (s === "ArrayList" || target === "ArrayList") {
+        if (s === "ArrayList" && target !== "ArrayList") { const o = this.obj(r.val); if (o && !o.elem) o.elem = elemOf(target); this.notes.push("raw"); }
+        return r.val;
+      }
+    }
+    if (target === "Object" && !PRIM.has(s)) return r.val;
+    if ((target === "Integer" || target === "Object") && s === "int") return this.box("int", r.val);
+    if ((target === "Double" || target === "Object") && s === "double") return this.box("double", r.val);
+    if (target === "int" && s === "Integer") return this.unbox(r.val, c);
+    if (target === "double" && s === "int") return { k: "double", v: r.val.v };
+    if (target === "double" && (s === "Double" || s === "Integer")) return this.unbox(r.val, c, "double");
+    if (target === "int" && s === "double") throw cerr("incompatible types: possible lossy conversion from double to int", c);
+    throw cerr("incompatible types: " + s + " cannot be converted to " + target, c);
+  }
+  lookup(name, c) {
+    const v = this.vars.get(name);
+    if (!v) {
+      if (CLASSES.has(name) || name === "Math" || name === "System") throw cerr(name + " is a class name, not a variable", c);
+      throw cerr("cannot find symbol: variable " + name, c);
+    }
+    if (!v.init) throw cerr("variable " + name + " might not have been initialized. It is only a reference with no object yet", c);
+    return v;
+  }
+  numeric(r, c) {
+    if (r.type === "int" || r.type === "double") return r.val;
+    if (r.type === "Integer" || r.type === "Double") return this.unbox(r.val, c);
+    throw cerr("bad operand type " + r.type + " for a math operator", c);
+  }
+  eval(e) {
+    switch (e.k) {
+      case "int": return { type: "int", val: { k: "int", v: e.v } };
+      case "dbl": return { type: "double", val: { k: "double", v: e.v } };
+      case "bool": return { type: "boolean", val: { k: "bool", v: e.v } };
+      case "str": return { type: "String", val: this.str(e.v) };
+      case "null": return { type: "null", val: { k: "null" } };
+      case "var": { const v = this.lookup(e.name, e.c); return { type: v.type, val: v.val }; }
+      case "neg": { const r = this.numeric(this.eval(e.e), e.c); return { type: r.k === "int" ? "int" : "double", val: { k: r.k, v: -r.v } }; }
+      case "cast": {
+        const r = this.numeric(this.eval(e.e), e.c);
+        if (e.ty === "int") return { type: "int", val: { k: "int", v: Math.trunc(r.v) } };
+        return { type: "double", val: { k: "double", v: r.v } };
+      }
+      case "bin": {
+        const L = this.eval(e.l), R = this.eval(e.r);
+        if (e.op === "+" && (L.type === "String" || R.type === "String")) return { type: "String", val: this.str(this.toStr(L.val) + this.toStr(R.val), false) };
+        const a = this.numeric(L, e.c), b = this.numeric(R, e.c);
+        const dbl = a.k === "double" || b.k === "double";
+        let v;
+        switch (e.op) {
+          case "+": v = a.v + b.v; break;
+          case "-": v = a.v - b.v; break;
+          case "*": v = a.v * b.v; break;
+          case "/": if (!dbl && b.v === 0) throw rerr("java.lang.ArithmeticException: / by zero", e.c); v = dbl ? a.v / b.v : Math.trunc(a.v / b.v); break;
+          case "%": if (!dbl && b.v === 0) throw rerr("java.lang.ArithmeticException: / by zero", e.c); v = a.v % b.v; break;
+        }
+        if (!dbl) v = v | 0;
+        return { type: dbl ? "double" : "int", val: { k: dbl ? "double" : "int", v } };
+      }
+      case "new": return this.construct(e);
+      case "field": {
+        if (e.recv.k === "var" && e.recv.name === "System" && e.name === "out") return { type: "PrintStream", val: null };
+        const r = this.eval(e.recv);
+        if (isList(r.type)) {
+          if (e.name === "length") throw cerr("ArrayLists do not have length. Use size()", e.c);
+          if (e.name === "size") throw cerr("size is a method. It needs ( ): size()", e.c);
+        }
+        if (r.type === "Name" && /^my/.test(e.name)) throw cerr(e.name + " has private access in Name", e.c);
+        throw cerr("cannot find symbol: " + e.name, e.c);
+      }
+      case "call": return this.call(e);
+    }
+    throw cerr("I do not know how to run that", e.c);
+  }
+  construct(e) {
+    const t = this.canon(e.ty, true);
+    const args = e.args.map((a) => this.eval(a));
+    if (isList(t)) {
+      if (args.length > 1 || (args.length === 1 && args[0].type !== "int")) throw cerr("no ArrayList constructor takes those arguments", e.c);
+      if (args.length === 1) this.notes.push("capacity");
+      const ref = this.alloc({ cls: "ArrayList", elem: t === "ArrayList<>" || t === "ArrayList" ? null : elemOf(t), items: [] });
+      return { type: t, val: ref };
+    }
+    if (t === "Name") {
+      if (args.length !== 2 && args.length !== 3) throw cerr("constructor Name cannot be applied to " + args.length + " argument" + (args.length === 1 ? "" : "s") + ". Name needs (first, last) or (first, middle, last)", e.c);
+      const parts = args.map((a, i) => { const v = this.coerce("String", a, e.args[i].c); if (v.k === "null") throw rerr("java.lang.NullPointerException", e.c); return this.obj(v).s; });
+      const o = args.length === 2
+        ? { cls: "Name", first: caseFixed(parts[0], e.c), middle: null, last: caseFixed(parts[1], e.c) }
+        : { cls: "Name", first: caseFixed(parts[0], e.c), middle: caseFixed(parts[1], e.c), last: caseFixed(parts[2], e.c) };
+      return { type: "Name", val: this.alloc(o) };
+    }
+    if (t === "Random") {
+      if (args.length > 1) throw cerr("no Random constructor takes those arguments", e.c);
+      return { type: "Random", val: this.alloc({ cls: "Random" }) };
+    }
+    if (t === "String") {
+      if (args.length === 0) return { type: "String", val: this.str("", false) };
+      const v = this.coerce("String", args[0], e.c); return { type: "String", val: this.str(this.obj(v).s, false) };
+    }
+    if (t === "Integer" && args.length === 1) { const v = this.coerce("int", args[0], e.c); return { type: "Integer", val: this.alloc({ cls: "Integer", n: v.v }) }; }
+    if (t === "Double" && args.length === 1) { const v = this.coerce("double", args[0], e.c); return { type: "Double", val: this.alloc({ cls: "Double", n: v.v }) }; }
+    if (PRIM.has(t)) throw cerr(t + " is a primitive. You do not use new with it", e.c);
+    throw cerr("cannot make a new " + t + " here", e.c);
+  }
+  checkIndex(o, i, c, forAdd) {
+    const n = o.items.length;
+    if (forAdd ? (i < 0 || i > n) : (i < 0 || i >= n))
+      throw rerr(forAdd ? "java.lang.IndexOutOfBoundsException: Index: " + i + ", Size: " + n
+                        : "java.lang.IndexOutOfBoundsException: Index " + i + " out of bounds for length " + n, c);
+  }
+  call(e) {
+    const name = e.name, c = e.c;
+    if (e.recv.k === "var" && e.recv.name === "Math" && !this.vars.has("Math")) {
+      if (name === "random" && e.args.length === 0) return { type: "double", val: { k: "double", v: this.rng ? this.rng() : Math.random() } };
+      throw cerr("cannot find symbol: method Math." + name, c);
+    }
+    const r = this.eval(e.recv);
+    if (r.type === "PrintStream") {
+      if (name !== "println" && name !== "print") throw cerr("cannot find symbol: method " + name, c);
+      if (e.args.length > 1) throw cerr(name + " takes one thing to print. Use + to join things", c);
+      const s = e.args.length ? this.toStr(this.coercePrint(this.eval(e.args[0]), e.args[0].c)) : "";
+      if (name === "println") this.out.push(s); else { if (this.out.length && this.out.partial) this.out[this.out.length - 1] += s; else this.out.push(s); }
+      this.out.partial = name === "print";
+      return { type: "void", val: null };
+    }
+    if (r.val && r.val.k === "null") {
+      const who = e.recv.k === "var" ? e.recv.name : "the value";
+      throw rerr('java.lang.NullPointerException: Cannot invoke "' + r.type.replace(/<.*>/, "") + "." + name + '()" because "' + who + '" is null', c);
+    }
+    const A = e.args.map((a) => this.eval(a));
+    const want = (n) => { if (A.length !== n) throw cerr("method " + name + " needs " + n + " argument" + (n === 1 ? "" : "s") + ", you gave " + A.length, c); };
+    const asInt = (i) => { const a = A[i]; if (a.type === "int") return a.val.v; if (a.type === "Integer") return this.unbox(a.val, c).v; throw cerr("incompatible types: " + a.type + " cannot be converted to int. The index has to be a number", e.args[i].c); };
+
+    if (isList(r.type)) {
+      const o = this.obj(r.val); const T = r.type === "ArrayList" ? "Object" : elemOf(r.type);
+      switch (name) {
+        case "add":
+          if (A.length === 1) { const v = this.coerce(T, A[0], e.args[0].c); o.items.push(v); o.touched = [o.items.length - 1]; return { type: "boolean", val: { k: "bool", v: true } }; }
+          if (A.length === 2) {
+            if (A[0].type !== "int" && A[0].type !== "Integer") throw cerr("add(index, value): the index comes first, then the value", e.args[0].c);
+            const i = asInt(0); const v = this.coerce(T, A[1], e.args[1].c);
+            this.checkIndex(o, i, c, true); o.items.splice(i, 0, v); o.touched = [i]; return { type: "void", val: null };
+          }
+          throw cerr("add takes add(value) or add(index, value)", c);
+        case "get": want(1); { const i = asInt(0); this.checkIndex(o, i, c); return { type: T, val: o.items[i] }; }
+        case "set": want(2); {
+          if (A[0].type !== "int" && A[0].type !== "Integer") throw cerr("set(index, value): the index comes first, then the value", e.args[0].c);
+          const i = asInt(0); const v = this.coerce(T, A[1], e.args[1].c);
+          this.checkIndex(o, i, c); const old = o.items[i]; o.items[i] = v; o.touched = [i]; return { type: T, val: old };
+        }
+        case "remove": want(1); {
+          if (A[0].type === "int") { const i = A[0].val.v; this.checkIndex(o, i, c); const old = o.items.splice(i, 1)[0]; o.touched = []; return { type: T, val: old }; }
+          const target = A[0];
+          const idx = o.items.findIndex((x) => this.equalsVal(x, target.val));
+          this.notes.push("removeObject");
+          if (idx >= 0) o.items.splice(idx, 1);
+          o.touched = [];
+          return { type: "boolean", val: { k: "bool", v: idx >= 0 } };
+        }
+        case "size": want(0); return { type: "int", val: { k: "int", v: o.items.length } };
+        case "isEmpty": want(0); return { type: "boolean", val: { k: "bool", v: o.items.length === 0 } };
+        case "clear": want(0); o.items = []; return { type: "void", val: null };
+        case "contains": want(1); return { type: "boolean", val: { k: "bool", v: o.items.some((x) => this.equalsVal(x, A[0].val)) } };
+        case "indexOf": want(1); return { type: "int", val: { k: "int", v: o.items.findIndex((x) => this.equalsVal(x, A[0].val)) } };
+        case "length": throw cerr("ArrayLists do not have length(). Use size()", c);
+        case "insert": throw cerr("there is no insert method. Use add(index, value)", c);
+        case "append": case "push": throw cerr("there is no " + name + " method. Use add(value)", c);
+        case "put": case "replace": throw cerr("there is no " + name + " method. Use set(index, value)", c);
+        case "delete": case "pop": throw cerr("there is no " + name + " method. Use remove(index)", c);
+        case "toString": want(0); return { type: "String", val: this.str(this.toStr(r.val), false) };
+      }
+      throw cerr("cannot find symbol: method " + name + " in ArrayList", c);
+    }
+    if (r.type === "Name") {
+      const o = this.obj(r.val);
+      if (name === "fullName") { want(0); return { type: "String", val: this.str(o.first + " " + o.middle + " " + o.last, false) }; }
+      if (name === "lastFirst") { want(0); return { type: "String", val: this.str(o.last + ", " + o.first + " " + o.middle, false) }; }
+      if (name === "toString") { want(0); return { type: "String", val: this.str("Name@" + o.hash, false) }; }
+      if (name === "caseFixed") throw cerr("caseFixed(String) has private access in Name", c);
+      throw cerr("cannot find symbol: method " + name + " in Name. Name has fullName() and lastFirst()", c);
+    }
+    if (r.type === "Random") {
+      if (name === "nextInt") {
+        if (A.length === 0) return { type: "int", val: { k: "int", v: Math.floor(Math.random() * 4294967296) - 2147483648 } };
+        want(1); const n = asInt(0);
+        if (n <= 0) throw rerr("java.lang.IllegalArgumentException: bound must be positive", c);
+        const x = this.rng ? this.rng() : Math.random();
+        return { type: "int", val: { k: "int", v: Math.floor(x * n) } };
+      }
+      if (name === "nextDouble") { want(0); return { type: "double", val: { k: "double", v: Math.random() } }; }
+      throw cerr("cannot find symbol: method " + name + " in Random", c);
+    }
+    if (r.type === "String") {
+      const s = this.obj(r.val).s;
+      if (name === "length") { want(0); return { type: "int", val: { k: "int", v: s.length } }; }
+      if (name === "toUpperCase") { want(0); return { type: "String", val: this.str(s.toUpperCase(), false) }; }
+      if (name === "toLowerCase") { want(0); return { type: "String", val: this.str(s.toLowerCase(), false) }; }
+      if (name === "equals") { want(1); return { type: "boolean", val: { k: "bool", v: A[0].type === "String" && A[0].val.k === "ref" && this.obj(A[0].val).s === s } }; }
+      if (name === "substring") {
+        const a = asInt(0), b = A.length > 1 ? asInt(1) : s.length;
+        if (a < 0 || b > s.length || a > b) throw rerr("java.lang.StringIndexOutOfBoundsException: begin " + a + ", end " + b + ", length " + s.length, c);
+        return { type: "String", val: this.str(s.slice(a, b), false) };
+      }
+      throw cerr("cannot find symbol: method " + name + " in String", c);
+    }
+    if (r.type === "Integer" || r.type === "Double") {
+      if (name === "intValue") return { type: "int", val: this.unbox(r.val, c) };
+      if (name === "toString") return { type: "String", val: this.str(this.toStr(r.val), false) };
+    }
+    if (PRIM.has(r.type)) throw cerr(r.type + " is a primitive. It has no methods", c);
+    throw cerr("cannot find symbol: method " + name, c);
+  }
+  coercePrint(r, c) { if (r.type === "void") throw cerr("'void' type not allowed here. That method does not give back anything to print", c); return r.val; }
+  equalsVal(a, b) {
+    if (a.k === "null" || b.k === "null") return a.k === b.k;
+    if (a.k !== "ref" || b.k !== "ref") return false;
+    const x = this.obj(a), y = this.obj(b);
+    if (x.cls === "String" && y.cls === "String") return x.s === y.s;
+    if ((x.cls === "Integer" || x.cls === "Double") && x.cls === y.cls) return x.n === y.n;
+    return a.id === b.id;
+  }
+  exec(s) {
+    this.step++;
+    for (const o of this.heap.values()) if (o.cls === "ArrayList") o.touched = null;
+    if (s.k === "decl") {
+      if (this.vars.has(s.name)) throw cerr("variable " + s.name + " is already defined. To point it at something new, leave off the type: " + s.name + " = ...", s.nc);
+      const t = this.canon(s.ty, false);
+      let val = null, init = false;
+      if (s.init) { const r = this.eval(s.init); val = this.coerce(t, r, s.init.c); init = true; }
+      this.vars.set(s.name, { type: t, val, init, born: this.step });
+      this.order.push(s.name);
+    } else if (s.k === "assign") {
+      const v = this.vars.get(s.name);
+      if (!v) throw cerr("cannot find symbol: variable " + s.name + ". Declare it first, with its type in front", s.nc);
+      const r = this.eval(s.rhs);
+      v.val = this.coerce(v.type, r, s.rhs.c); v.init = true; v.changed = this.step;
+    } else {
+      if (s.e.k !== "call" && s.e.k !== "new") throw cerr("not a statement. That line computes something but does nothing with it", s.c);
+      this.eval(s.e);
+    }
+    this.gc();
+  }
+  gc() {
+    const seen = new Set();
+    const mark = (v) => {
+      if (!v || v.k !== "ref" || seen.has(v.id)) return;
+      seen.add(v.id); const o = this.heap.get(v.id);
+      if (o && o.cls === "ArrayList") o.items.forEach(mark);
+    };
+    for (const v of this.vars.values()) if (v.init) mark(v.val);
+    for (const o of [...this.heap.values()]) {
+      if (seen.has(o.id)) { o.gcAt = 0; continue; }
+      if (o.cls === "String" || o.cls === "Integer" || o.cls === "Double") { this.heap.delete(o.id); continue; }
+      if (!o.gcAt) o.gcAt = this.step; else if (o.gcAt < this.step) this.heap.delete(o.id);
+    }
+  }
+  run(src) { const stmts = new Parser(src).program(); for (const s of stmts) this.exec(s); return this; }
+  list(name) { const v = this.vars.get(name); return v && v.init && v.val.k === "ref" ? this.obj(v.val) : null; }
+  listStrs(name) { const o = this.list(name); return o ? o.items.map((x) => this.toStr(x)) : null; }
+}
+
+/* run an answer on top of setup code; returns {m, err} */
+function runAnswer(setup, ans, rng) {
+  const m = new Machine(); if (rng) m.rng = rng;
+  m.run(setup);
+  m.out.length = 0; m.notes = [];
+  for (const o of m.heap.values()) o.preexisting = true;
+  try { const stmts = new Parser(ans).program(); if (!stmts.length) throw syn("type a line of Java", 0); for (const s of stmts) m.exec(s); }
+  catch (err) { if (err instanceof JErr) return { m, err }; throw err; }
+  return { m, err: null };
+}
+function errText(err) {
+  if (err.kind === "syntax") return "NOT QUITE - your syntax is wrong. " + cap(err.message) + ".";
+  if (err.kind === "compile") return "NOT QUITE - Java will not compile this: " + err.message + ".";
+  return "NOT QUITE - it compiles, but it crashes: " + err.message;
+}
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+function showErr(vEl, cEl, err, src) {
+  vEl.className = "verdict nope"; vEl.textContent = errText(err);
+  if (cEl) {
+    if (err.col != null && src.indexOf("\n") < 0 && err.kind !== "runtime") cEl.textContent = src + "\n" + " ".repeat(Math.max(0, err.col)) + "^";
+    else cEl.textContent = "";
+  }
+}
+
+/* =====================================================================
+   Memory diagram
+   ===================================================================== */
+let memUid = 0;
+function renderMemory(host, m, opts = {}) {
+  if (!host._uid) host._uid = "m" + (++memUid);
+  const seen = host._seen || new Set(); const now = new Set();
+  const isNew = (k) => { now.add(k); return !seen.has(k) && !opts.noAnim; };
+  const compact = !!opts.compact;
+  const objs = [...m.heap.values()];
+  const inList = new Map();
+  for (const o of objs) if (o.cls === "ArrayList") o.items.forEach((it) => { if (it && it.k === "ref" && !inList.has(it.id)) inList.set(it.id, inList.size); });
+
+  let sh = "";
+  for (const name of m.order) {
+    const v = m.vars.get(name);
+    let cell;
+    if (!v.init) cell = '<span class="nov" title="declared, but no value yet">?</span>';
+    else if (v.val.k === "null") cell = '<span class="nul">null</span>';
+    else if (v.val.k === "ref") cell = '<span class="dot" data-to="' + v.val.id + '"></span>';
+    else cell = esc(v.val.k === "double" ? javaDouble(v.val.v) : String(v.val.v));
+    const key = "v:" + name + ":" + (v.init ? (v.val.k === "ref" ? v.val.id : JSON.stringify(v.val)) : "?");
+    const fr = isNew("v:" + name);
+    isNew(key);
+    sh += '<div class="var' + (fr ? " fresh" : "") + '"><span class="vt">' + esc(v.type) + '</span><span class="vn">' + esc(name) + '</span><span class="vv">' + cell + "</span></div>";
+  }
+
+  const objHTML = (o) => {
+    const fr = isNew("o:" + o.id);
+    let body = "", head = esc(o.cls);
+    if (o.cls === "ArrayList") {
+      head = "ArrayList&lt;" + esc(o.elem || "?") + "&gt;<span>size " + o.items.length + "</span>";
+      if (!o.items.length) body = '<div class="empty">empty</div>';
+      else body = '<div class="slots">' + o.items.map((it, i) => {
+        let inner;
+        if (it.k === "null") inner = '<span class="nul">null</span>';
+        else if (compact) inner = esc(m.toStr(it));
+        else inner = '<span class="dot" data-to="' + it.id + '"></span>';
+        const sk = "s:" + o.id + ":" + i + ":" + (it.k === "ref" ? it.id : "n");
+        const flash = isNew(sk) && !fr;
+        return '<div class="slot' + (flash ? " flash" : "") + '"><div class="sv">' + inner + '</div><div class="ix">' + i + "</div></div>";
+      }).join("") + "</div>";
+    } else if (o.cls === "Name") {
+      const f = (k, v) => '<div class="fld"><span>' + k + "</span>" + (v == null ? '<em class="nul">null</em>' : esc(q(v))) + "</div>";
+      body = '<div class="ob">' + f("myFirst", o.first) + f("myMiddle", o.middle) + f("myLast", o.last) + "</div>";
+    } else if (o.cls === "String") body = '<div class="ob">' + esc(q(o.s)) + "</div>";
+    else if (o.cls === "Integer") body = '<div class="ob">' + o.n + "</div>";
+    else if (o.cls === "Double") body = '<div class="ob">' + javaDouble(o.n) + "</div>";
+    else if (o.cls === "Random") body = '<div class="ob" style="font-size:.72rem;color:var(--ink-soft)">makes random<br>numbers</div>';
+    return '<div class="obj k-' + o.cls + (fr ? " fresh" : "") + (o.gcAt ? " gc" : "") + '" data-id="' + o.id + '"><div class="oh">' + head + "</div>" + body +
+      (o.gcAt ? '<span class="gcl">no references: garbage</span>' : "") + "</div>";
+  };
+  let top = objs.filter((o) => !inList.has(o.id));
+  let elems = objs.filter((o) => inList.has(o.id)).sort((a, b) => inList.get(a.id) - inList.get(b.id));
+  if (compact) {
+    const stackRef = new Set(); for (const v of m.vars.values()) if (v.init && v.val && v.val.k === "ref") stackRef.add(v.val.id);
+    top = top.filter((o) => !(o.cls === "String" && o.gcAt));
+    elems = elems.filter((o) => stackRef.has(o.id));
+  }
+  const html = '<div class="mem">' +
+    '<div class="stackcol"><div class="mh">Stack <small>references and primitives</small></div>' + (sh || '<div class="none">nothing yet</div>') + "</div>" +
+    '<div class="heapcol"><div class="mh">Heap <small>objects</small></div>' +
+      (top.length || elems.length ? "" : '<div class="none">no objects yet</div>') +
+      '<div class="hrow">' + top.map(objHTML).join("") + "</div>" +
+      (elems.length ? '<div class="hrow elems">' + elems.map(objHTML).join("") + "</div>" : "") +
+    "</div>" +
+    '<svg class="arrows" aria-hidden="true"></svg></div>';
+  host.innerHTML = html;
+  const arrowKeys = [];
+  host.querySelectorAll(".dot[data-to]").forEach((d, i) => arrowKeys.push(d));
+  const newArrows = new Set();
+  arrowKeys.forEach((d) => {
+    const from = d.closest(".var") ? "v:" + d.closest(".var").querySelector(".vn").textContent : "s:" + d.closest(".obj").dataset.id + ":" + [...d.closest(".slots").children].indexOf(d.closest(".slot"));
+    const k = "a:" + from + ">" + d.dataset.to; d.dataset.key = k;
+    if (isNew(k)) newArrows.add(k);
+  });
+  host._seen = now;
+  host._newArrows = newArrows;
+  requestAnimationFrame(() => drawArrows(host));
+  if (!host._ro && window.ResizeObserver) { host._ro = new ResizeObserver(() => drawArrows(host, true)); host._ro.observe(host); }
+}
+function drawArrows(host, still) {
+  const mem = host.querySelector(".mem"); if (!mem) return;
+  const svg = mem.querySelector("svg.arrows");
+  const box = (el) => { let x = 0, y = 0, e = el; while (e && e !== mem) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; } return { left: x, top: y, right: x + el.offsetWidth, bottom: y + el.offsetHeight, width: el.offsetWidth, height: el.offsetHeight }; };
+  const R = { left: 0, top: 0 };
+  svg.setAttribute("width", mem.offsetWidth); svg.setAttribute("height", mem.offsetHeight);
+  const mid = host._uid + "-ah";
+  let out = '<defs><marker id="' + mid + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>';
+  mem.querySelectorAll(".dot[data-to]").forEach((d) => {
+    const t = mem.querySelector('.obj[data-id="' + d.dataset.to + '"]'); if (!t) return;
+    const a = box(d), b = box(t);
+    const x1 = a.left + a.width / 2 - R.left, y1 = a.top + a.height / 2 - R.top;
+    let x2, y2, c1x, c1y, c2x, c2y;
+    if (b.top > a.bottom + 6) {
+      x2 = b.left + Math.min(b.width / 2, 28) - R.left; y2 = b.top - R.top;
+      const dy = Math.max(24, (y2 - y1) / 2); c1x = x1; c1y = y1 + dy; c2x = x2; c2y = y2 - dy;
+    } else if (b.left > a.right) {
+      x2 = b.left;
+      y2 = Math.min(Math.max(y1, b.top + 12), b.bottom - 8);
+      const dx = Math.max(24, (x2 - x1) / 2); c1x = x1 + dx; c1y = y1; c2x = x2 - dx; c2y = y2;
+    } else {
+      x2 = b.left + b.width / 2 - R.left; y2 = b.bottom - R.top;
+      c1x = x1; c1y = y1 + 40; c2x = x2; c2y = y2 + 40;
+    }
+    const draw = !still && host._newArrows && host._newArrows.has(d.dataset.key);
+    out += '<path class="arr' + (draw ? " draw" : "") + '" pathLength="1" marker-end="url(#' + mid + ')" d="M' + x1.toFixed(1) + "," + y1.toFixed(1) + " C" + c1x.toFixed(1) + "," + c1y.toFixed(1) + " " + c2x.toFixed(1) + "," + c2y.toFixed(1) + " " + x2.toFixed(1) + "," + y2.toFixed(1) + '"/>';
+  });
+  svg.innerHTML = out;
+  if (!still) host._newArrows = new Set();
+}
+function memOf(src) { const m = new Machine(); m.run(src); return m; }
+
+/* simple list boxes */
+function listView(items, changed) {
+  if (!items.length) return '<div class="lv"><span class="emp">empty</span></div>';
+  return '<div class="lv">' + items.map((s, i) => '<div class="cell' + (changed && changed.includes(i) ? " chg" : "") + '"><b>' + esc(s) + "</b><i>" + i + "</i></div>").join("") + "</div>";
+}
+function listLit(items) { return "[" + items.join(", ") + "]"; }
+
+/* =====================================================================
+   Memory Lab
+   ===================================================================== */
+const PRESETS = [
+  ["Make a list", `ArrayList<String> names;
+names = new ArrayList<String>();
+names.add("Zain");
+names.add("Devon");
+names.add(1, "Maria");
+names.set(0, "Ava");
+String gone = names.remove(2);
+int n = names.size();
+System.out.println(names + " " + gone + " " + n);`],
+  ["Two references, one list", `ArrayList<String> songs = new ArrayList<String>();
+ArrayList<String> mix = songs;
+mix.add("Ivy");
+songs.add("Golden");
+System.out.println(songs.size());
+mix = new ArrayList<String>();
+System.out.println(mix.size());`],
+  ["Name objects", `ArrayList<Name> team = new ArrayList<Name>();
+Name cap = new Name("kai", "jin", "park");
+team.add(cap);
+team.add(new Name("Ava", "Rose", "Diaz"));
+team.add(cap);
+System.out.println(team.get(1).fullName());
+System.out.println(cap);
+team.remove(0);`],
+  ["Lost object", `Name a = new Name("Omar", "Ali", "Said");
+Name b = a;
+a = new Name("Lena", "Mae", "Cruz");
+b = null;
+a = b;`],
+  ["Integers", `ArrayList<Integer> scores = new ArrayList<Integer>();
+scores.add(90);
+scores.add(75);
+scores.add(2);
+scores.remove(2);
+int first = scores.get(0);
+System.out.println(scores);`],
+];
+const lab = { m: null, stmts: null, i: 0, lines: [], running: false, errLine: -1 };
+function labLineOf(col) { return lab.src.slice(0, col).split("\n").length - 1; }
+function labShowView() {
+  const v = $("labView");
+  v.innerHTML = lab.lines.map((ln, li) => {
+    let cls = "";
+    if (li === lab.errLine) cls = "err";
+    else if (lab.stmts) {
+      const nextS = lab.stmts[lab.i];
+      if (nextS && labLineOf(nextS.c) === li) cls = "next";
+      else if (lab.stmts.slice(0, lab.i).some((s) => labLineOf(s.c) === li)) cls = "ran";
+    }
+    return '<div class="' + cls + '">' + (esc(ln) || " ") + "</div>";
+  }).join("");
+}
+function labStart() {
+  lab.src = $("labCode").value; lab.lines = lab.src.split("\n"); lab.errLine = -1;
+  $("labMsg").className = "verdict"; $("labMsg").textContent = "";
+  try { lab.stmts = new Parser(lab.src).program(); }
+  catch (err) {
+    if (!(err instanceof JErr)) throw err;
+    lab.stmts = null; lab.errLine = labLineOf(err.col || 0);
+    $("labMsg").className = "verdict nope"; $("labMsg").textContent = "Line " + (lab.errLine + 1) + ": " + errText(err).replace(/^NOT QUITE - /, "");
+    lab.running = true; $("labCode").hidden = true; $("labView").hidden = false; labShowView();
+    return false;
+  }
+  lab.m = new Machine(); lab.i = 0; lab.running = true;
+  $("labCode").hidden = true; $("labView").hidden = false;
+  $("labMem").innerHTML = ""; $("labMem")._seen = null;
+  renderMemory($("labMem"), lab.m); labOut(); labShowView();
+  return true;
+}
+function labOut() { $("labOut").innerHTML = '<span class="lbl">Console</span>' + esc(lab.m ? lab.m.out.join("\n") : ""); }
+function labStep() {
+  if (!lab.running) { if (!labStart()) return; }
+  if (!lab.stmts || lab.errLine >= 0) return;
+  if (lab.i >= lab.stmts.length) { $("labMsg").className = "verdict"; $("labMsg").textContent = "Done. Click Edit code to change it."; return false; }
+  const s = lab.stmts[lab.i];
+  try { lab.m.exec(s); lab.i++; }
+  catch (err) {
+    if (!(err instanceof JErr)) throw err;
+    lab.errLine = labLineOf(s.c);
+    $("labMsg").className = "verdict nope"; $("labMsg").textContent = "Line " + (lab.errLine + 1) + ": " + errText(err).replace(/^NOT QUITE - /, "");
+    labShowView(); renderMemory($("labMem"), lab.m); labOut(); return false;
+  }
+  labShowView(); renderMemory($("labMem"), lab.m); labOut();
+  const msg = labExplain(s);
+  $("labMsg").className = "verdict"; $("labMsg").innerHTML = msg;
+  if (lab.i >= lab.stmts.length) $("labMsg").innerHTML = msg + " <b>Done.</b>";
+  return true;
+}
+function labExplain(s) {
+  const m = lab.m;
+  if (s.k === "decl") {
+    const v = m.vars.get(s.name);
+    if (!v.init) return "<code>" + esc(s.name) + "</code> is a reference on the stack. No object yet, so it points at nothing.";
+    if (v.val.k === "ref") {
+      const o = m.obj(v.val);
+      const made = s.init && (s.init.k === "new");
+      return made ? "<code>new</code> made a " + esc(o.cls) + " object on the heap. <code>" + esc(s.name) + "</code> is a reference on the stack that points at it."
+                  : "<code>" + esc(s.name) + "</code> is a new reference. It points at an object that already exists. No new object was made.";
+    }
+    if (v.val.k === "null") return "<code>" + esc(s.name) + "</code> is a reference set to null. It points at nothing.";
+    return "<code>" + esc(s.name) + "</code> is a primitive. The value sits right in its box. No arrow, no object.";
+  }
+  if (s.k === "assign") {
+    const v = m.vars.get(s.name);
+    if (v.val.k === "ref") return "<code>" + esc(s.name) + "</code> now points somewhere new. The old object is not changed." + (gcCount(m) ? " Anything with no arrows left is garbage." : "");
+    if (v.val.k === "null") return "<code>" + esc(s.name) + "</code> now points at nothing." + (gcCount(m) ? " Anything with no arrows left is garbage." : "");
+    return "<code>" + esc(s.name) + "</code> got a new value.";
+  }
+  if (s.e.k === "call") {
+    const n = s.e.name;
+    const tips = { add: s.e.args.length === 2 ? "add(index, value) inserted a reference and slid the rest right." : "add(value) put a reference at the end.",
+      set: "set replaced the reference in that slot. Size did not change.",
+      remove: "remove took the slot out and the rest slid left.",
+      println: "Printed to the console.", print: "Printed to the console." };
+    return tips[n] || "Ran it.";
+  }
+  return "Ran it.";
+}
+function gcCount(m) { let n = 0; for (const o of m.heap.values()) if (o.gcAt) n++; return n; }
+function labInit() {
+  $("presets").innerHTML = PRESETS.map((p, i) => '<button data-i="' + i + '">' + esc(p[0]) + "</button>").join("");
+  $("presets").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; labEdit(); $("labCode").value = PRESETS[+b.dataset.i][1]; labStep(); });
+  $("labCode").value = PRESETS[0][1];
+  $("labStep").onclick = () => labStep();
+  $("labAll").onclick = () => { if (!lab.running && !labStart()) return; let guard = 0; while (lab.stmts && lab.i < lab.stmts.length && lab.errLine < 0 && guard++ < 200) { if (!labStep()) break; } };
+  $("labReset").onclick = labEdit;
+  labStart();
+}
+function labEdit() { lab.running = false; lab.m = null; $("labCode").hidden = false; $("labView").hidden = true; $("labMsg").textContent = ""; $("labOut").innerHTML = '<span class="lbl">Console</span>'; $("labMem").innerHTML = ""; $("labMem")._seen = null; }
+
+/* =====================================================================
+   Levels framework
+   ===================================================================== */
+const STORE = "csa-arraylist-v1";
+let done = {};
+try { done = JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch (e) { done = {}; }
+function saveDone() { try { localStorage.setItem(STORE, JSON.stringify(done)); } catch (e) {} }
+
+class Deck {
+  constructor(kinds) { this.kinds = kinds; this.todo = shuffle(kinds); this.cleared = 0; }
+  get cur() { return this.todo[0]; }
+  clear() { this.todo.shift(); this.cleared++; }
+  again() { const k = this.todo.shift(); this.todo.push(k); }
+  get finished() { return this.todo.length === 0; }
+}
+function progHTML(n, total, label) {
+  return '<div class="prog"><span>' + label + "</span><span class=\"bar\"><i style=\"width:" + Math.round(100 * n / total) + '%"></i></span><span>' + n + " of " + total + "</span></div>";
+}
+const NAMES = ["Zain", "Devon", "Maria", "Ava", "Kai", "Lena", "Omar", "Priya", "Theo", "Rosa", "Jun", "Nia", "Mateo", "Iris", "Sam", "Leo", "Ana", "Eli"];
+const SONGS = ["Ivy", "Golden", "Levitate", "Runaway", "Sunflower", "Dynamite", "Halo", "Riptide", "Glimpse", "Paradise"];
+
+const LEVELS = [
+  { id: "L1", short: "1 Declare", title: "Level 1: Declare and initialize" },
+  { id: "L2", short: "2 Predict", title: "Level 2: What does it do?" },
+  { id: "L3", short: "3 Write", title: "Level 3: Write the call" },
+  { id: "L4", short: "4 Random", title: "Level 4: A random item" },
+  { id: "L5", short: "5 Reference or object", title: "Level 5: Reference or object?" },
+  { id: "L6", short: "6 Locked in?", title: "Level 6: Locked in?" },
+];
+let curLevel = 0;
+function navRender() {
+  $("levelNav").innerHTML = LEVELS.map((L, i) => '<button data-i="' + i + '"' + (i === curLevel ? ' aria-current="true"' : "") + (done[L.id] ? ' class="done"' : "") + ">" + esc(L.short) + "</button>").join("");
+  $("finalCard").hidden = !LEVELS.every((L) => done[L.id]);
+}
+function levelDone(id) { if (!done[id]) { done[id] = true; saveDone(); } navRender(); }
+function showLevel(i) {
+  curLevel = i; navRender();
+  $("levels").innerHTML = '<section class="card" id="lvl"></section>';
+  const card = $("lvl");
+  ({ L1: l1, L2: l2, L3: l3, L4: l4, L5: l5, L6: l6 })[LEVELS[i].id](card, LEVELS[i]);
+}
+function nextLevelBtn(card, id) {
+  const i = LEVELS.findIndex((L) => L.id === id);
+  if (i < LEVELS.length - 1) return '<div class="cleared">Level cleared. <button class="go" id="toNext" style="margin-left:8px">Go to ' + esc(LEVELS[i + 1].short.replace(/^\d+ /, "")) + "</button></div>";
+  return '<div class="cleared">Level cleared.</div>';
+}
+function wireNext() { const b = $("toNext"); if (b) b.onclick = () => { showLevel(curLevel + 1); window.scrollTo({ top: $("levelNav").offsetTop - 10, behavior: "smooth" }); }; }
+
+/* =====================================================================
+   Level 1: declare and initialize
+   ===================================================================== */
+const L1_TYPES = [
+  { T: "String", what: "<code>String</code> objects", vars: ["cities", "names", "pets", "songs"] },
+  { T: "Name", what: "<code>Name</code> objects", vars: ["friends", "roster", "team"] },
+  { T: "Integer", what: "whole numbers (ints)", vars: ["scores", "ages", "steps"] },
+  { T: "Double", what: "decimal numbers (doubles)", vars: ["prices", "temps", "times"] },
+];
+function l1Make(kind) {
+  const ty = pick(L1_TYPES), v = pick(ty.vars);
+  if (kind === "full") return { kind, ty, v, setup: "", prompt: "Declare and initialize an ArrayList called <code>" + v + "</code> that holds " + ty.what + "." };
+  if (kind === "ref") return { kind, ty, v, setup: "", prompt: "Declare a <b>reference</b> called <code>" + v + "</code> for an ArrayList of " + ty.what + ". Do <b>not</b> make the object yet." };
+  if (kind === "obj") return { kind, ty, v, setup: "ArrayList<" + ty.T + "> " + v + ";", prompt: "<code>" + v + "</code> is already declared (below). Now make the ArrayList object and point <code>" + v + "</code> at it." };
+  if (kind === "name") { const [f, l] = sample(NAMES, 2); const v2 = pick(["best", "me", "captain", "buddy"]); return { kind, v: v2, f, l, setup: "", prompt: "Make a <code>Name</code> object for <b>" + f + " " + l + "</b> and store it in a new variable called <code>" + v2 + "</code>." }; }
+  const v3 = pick(["rand", "gen", "dice"]);
+  return { kind, v: v3, setup: "", prompt: "Declare and initialize a <code>Random</code> object called <code>" + v3 + "</code>." };
+}
+function l1Check(Q, ans) {
+  const { m, err } = runAnswer(Q.setup, ans);
+  if (err) return { ok: false, err, m };
+  const v = m.vars.get(Q.v);
+  const others = m.order.filter((n) => n !== Q.v && !(Q.setup && Q.setup.includes(" " + n + ";")));
+  if (!v) return { ok: false, msg: others.length ? "NOT QUITE - the variable should be called <code>" + esc(Q.v) + "</code>, not <code>" + esc(others[0]) + "</code>." : "NOT QUITE - I do not see a variable called <code>" + esc(Q.v) + "</code>.", m };
+  if (Q.kind === "name") {
+    if (v.type !== "Name") return { ok: false, msg: "NOT QUITE - <code>" + esc(Q.v) + "</code> should be a <code>Name</code>.", m };
+    if (!v.init || v.val.k !== "ref") return { ok: false, msg: "NOT QUITE - that is only the reference. Use <code>new Name(...)</code> to make the object.", m };
+    const o = m.obj(v.val);
+    if (o.first !== Q.f || o.last !== Q.l) return { ok: false, msg: "NOT QUITE - that Name is " + esc(o.first + " " + o.last) + ". It should be " + esc(Q.f + " " + Q.l) + ". First name comes first.", m };
+    return { ok: true, m, cap: "<code>new Name(...)</code> made the object on the heap. <code>" + esc(Q.v) + "</code> is the reference on the stack. The Strings live inside the object." };
+  }
+  if (Q.kind === "random") {
+    if (v.type !== "Random") return { ok: false, msg: "NOT QUITE - <code>" + esc(Q.v) + "</code> should be a <code>Random</code>.", m };
+    if (!v.init || v.val.k !== "ref") return { ok: false, msg: "NOT QUITE - that is only the reference. Add <code>= new Random()</code>.", m };
+    return { ok: true, m, cap: "One Random object on the heap, one reference on the stack. You only need one, and you can call <code>nextInt</code> on it as many times as you want." };
+  }
+  const want = "ArrayList<" + Q.ty.T + ">";
+  if (v.type === "ArrayList") return { ok: false, msg: "NOT QUITE - put the type in the < > on the left: <code>" + esc(want) + "</code>.", m };
+  if (v.type !== want) return { ok: false, msg: isList(v.type) ? "NOT QUITE - this list should hold <code>" + Q.ty.T + "</code>, not <code>" + esc(elemOf(v.type)) + "</code>." : "NOT QUITE - <code>" + esc(Q.v) + "</code> should be an <code>" + esc(want) + "</code>.", m };
+  const hasObj = v.init && v.val.k === "ref";
+  if (Q.kind === "ref") {
+    if (hasObj) return { ok: false, msg: "NOT QUITE - that also made the object. This time stop after the name: <code>" + esc(want + " " + Q.v) + ";</code>", m };
+    return { ok: true, m, cap: "That is a reference on the stack with nothing to point at yet. In a method, Java will not even let you use it until you give it an object." };
+  }
+  if (!hasObj) return { ok: false, msg: "NOT QUITE - that only makes the reference. Add <code>= new " + esc(want) + "()</code> to make the object.", m };
+  const raw = m.notes.includes("raw");
+  const capc = m.notes.includes("capacity");
+  return { ok: true, m, cap: (raw ? "Java runs that, but gives a warning. Put the type in the < > on the right too, or use <code>&lt;&gt;</code>. " : "") +
+    (capc ? "The number in ( ) is only a starting capacity. The list is still empty, size 0. " : "") +
+    (Q.kind === "obj" ? "<code>new</code> made the ArrayList object on the heap, and now the reference on the stack points at it." : "<code>" + esc(Q.v) + "</code> is the reference on the stack. <code>new</code> made the ArrayList object on the heap. The arrow is the reference.") };
+}
+function l1(card, L) {
+  const deck = new Deck(["full", "ref", "obj", "name", "random", "full"]);
+  let Q, missed;
+  function ask() {
+    if (deck.finished) { levelDone(L.id); card.querySelector("#l1body").innerHTML = nextLevelBtn(card, L.id); wireNext(); card.querySelector("#l1prog").innerHTML = progHTML(deck.cleared, deck.kinds.length, "Cleared"); return; }
+    Q = l1Make(deck.cur); missed = false;
+    card.querySelector("#l1prog").innerHTML = progHTML(deck.cleared, deck.kinds.length, "Cleared");
+    card.querySelector("#l1body").innerHTML =
+      '<p class="prompt">' + Q.prompt + "</p>" + (Q.setup ? '<pre class="code">' + esc(Q.setup) + "</pre>" : "") +
+      '<div class="answer-row"><input id="l1in" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="type one line of Java"><button class="go" id="l1go">Check</button></div>' +
+      '<div class="verdict" id="l1v"></div><div class="caret" id="l1c"></div><div class="expl" id="l1x"></div><div id="l1mem"></div><div class="btns" id="l1nx"></div>';
+    const inp = card.querySelector("#l1in"); inp.focus({ preventScroll: true });
+    const go = () => check(inp.value);
+    card.querySelector("#l1go").onclick = go; inp.onkeydown = (e) => { if (e.key === "Enter") go(); };
+  }
+  function check(ans) {
+    const r = l1Check(Q, ans);
+    const vEl = card.querySelector("#l1v"), cEl = card.querySelector("#l1c");
+    cEl.textContent = ""; card.querySelector("#l1x").innerHTML = "";
+    if (r.err) { showErr(vEl, cEl, r.err, ans); card.querySelector("#l1mem").innerHTML = ""; missed = true; return; }
+    renderMemory(card.querySelector("#l1mem"), r.m);
+    if (!r.ok) { vEl.className = "verdict nope"; vEl.innerHTML = r.msg; missed = true; return; }
+    vEl.className = "verdict yes"; vEl.innerHTML = "CORRECT" + (missed ? " - you will get one more like this before the level clears." : ".");
+    card.querySelector("#l1x").innerHTML = r.cap;
+    card.querySelector("#l1in").disabled = true; card.querySelector("#l1go").disabled = true;
+    if (missed) deck.again(); else deck.clear();
+    card.querySelector("#l1nx").innerHTML = '<button class="go" id="l1next">Next</button>';
+    card.querySelector("#l1next").onclick = ask; card.querySelector("#l1next").focus({ preventScroll: true });
+  }
+  card.innerHTML = "<h2>" + L.title + '</h2><p class="sub">Type one line of Java. It really runs, so the memory picture shows exactly what your line made. Get each kind right on the first try to clear it.</p><div id="l1prog"></div><div id="l1body"></div>';
+  ask();
+}
+
+/* =====================================================================
+   Level 2: predict
+   ===================================================================== */
+function l2Make(kind) {
+  const ints = Math.random() < 0.3 && kind !== "addAt";
+  const v = ints ? "scores" : "names";
+  const T = ints ? "Integer" : "String";
+  const n = randInt(3, 5);
+  const items = ints ? sample([12, 40, 7, 88, 3, 51, 26, 9, 64, 15], n) : sample(NAMES, n);
+  const fresh = () => (ints ? String(pick([5, 70, 33, 18, 99].filter((x) => !items.includes(x)))) : q(pick(NAMES.filter((x) => !items.includes(x)))));
+  const lit = (x) => (ints ? String(x) : q(x));
+  const setup = "ArrayList<" + T + "> " + v + " = new ArrayList<" + T + ">();\n" + items.map((x) => v + ".add(" + lit(x) + ");").join("\n");
+  let stmt, rule;
+  const i = randInt(0, n - 1);
+  switch (kind) {
+    case "add": stmt = v + ".add(" + fresh() + ");"; rule = "<code>add(value)</code> always puts it at the end."; break;
+    case "addAt": { const j = randInt(0, n - 1); stmt = v + ".add(" + j + ", " + fresh() + ");"; rule = "<code>add(index, value)</code> inserts at that index and slides everything from there to the right. Nothing is lost, and the size goes up by 1."; break; }
+    case "get": stmt = "System.out.println(" + v + ".get(" + i + "));"; rule = "<code>get(i)</code> gives back what is in slot i. It does not change the list. Indexes start at 0."; break;
+    case "set": stmt = Math.random() < 0.5 ? v + ".set(" + i + ", " + fresh() + ");" : "System.out.println(" + v + ".set(" + i + ", " + fresh() + "));"; rule = "<code>set(i, value)</code> replaces slot i. The size stays the same. It gives back the <b>old</b> value."; break;
+    case "remove": {
+      if (ints && Math.random() < 0.6) {
+        const idx = randInt(0, n - 1); stmt = "System.out.println(" + v + ".remove(" + idx + "));";
+        rule = "<code>remove(i)</code> takes out slot i, slides the rest left, and gives back what it removed. With an <code>ArrayList&lt;Integer&gt;</code>, <code>remove(" + idx + ")</code> still means <b>index</b> " + idx + ", not the number " + idx + ".";
+      } else { stmt = Math.random() < 0.5 ? v + ".remove(" + i + ");" : "System.out.println(" + v + ".remove(" + i + "));"; rule = "<code>remove(i)</code> takes out slot i, slides the rest left, and gives back what it removed."; }
+      break;
+    }
+    case "size": stmt = (Math.random() < 0.5 ? v + ".add(" + fresh() + ");\n" : v + ".remove(0);\n") + "System.out.println(" + v + ".size());"; rule = "<code>size()</code> is how many items there are, not the last index. The last index is <code>size() - 1</code>."; break;
+    case "oob": {
+      const opts = [v + ".get(" + n + ");", "System.out.println(" + v + ".get(" + n + "));", v + ".set(" + n + ", " + fresh() + ");", v + ".remove(" + n + ");", v + ".add(" + (n + 1) + ", " + fresh() + ");", v + ".get(" + v + ".size());"];
+      stmt = pick(opts);
+      rule = "Valid indexes are 0 to <code>size() - 1</code>. There are " + n + " items, so the last index is " + (n - 1) + ". Only <code>add(index, value)</code> can also use " + n + ", to add at the very end.";
+      break;
+    }
+  }
+  if (kind !== "oob" && Math.random() < 0.25) {
+    const safe = { add: 1, addAt: 1, set: 1 };
+    if (safe[kind]) { /* sometimes ask the boundary that is legal */ if (kind === "addAt" && Math.random() < 0.5) { stmt = v + ".add(" + n + ", " + fresh() + ");"; rule = "<code>add(index, value)</code> can use index " + n + " (the size) to add at the very end. That is the one time size() is a legal index."; } }
+  }
+  const m = new Machine(); m.run(setup); m.out.length = 0;
+  const before = m.listStrs(v);
+  let crash = null;
+  try { for (const s of new Parser(stmt).program()) m.exec(s); } catch (err) { if (!(err instanceof JErr)) throw err; crash = err; }
+  const after = m.listStrs(v);
+  const o = m.list(v);
+  return { kind, v, T, setup, stmt, before, after, out: m.out.slice(), crash, rule, changed: o && o.touched ? o.touched : [], printed: /println/.test(stmt) };
+}
+function parseListAnswer(s) {
+  s = s.trim();
+  if (/^\[?\s*\]?$/.test(s) && /\[/.test(s)) return [];
+  if (s === "" ) return null;
+  s = s.replace(/^\[/, "").replace(/\]$/, "").trim();
+  if (s === "") return [];
+  return s.split(",").map((x) => x.trim().replace(/^["'“”]+|["'“”]+$/g, ""));
+}
+const sameList = (a, b) => a && b && a.length === b.length && a.every((x, i) => x.toLowerCase() === String(b[i]).toLowerCase());
+const normOut = (s) => s.trim().replace(/^["'“”]+|["'“”]+$/g, "").toLowerCase();
+function l2(card, L) {
+  const deck = new Deck(["add", "addAt", "get", "set", "remove", "size", "oob"]);
+  let Q, missed, crashOn;
+  function ask() {
+    card.querySelector("#l2prog").innerHTML = progHTML(deck.cleared, deck.kinds.length, "Cleared");
+    if (deck.finished) { levelDone(L.id); card.querySelector("#l2body").innerHTML = nextLevelBtn(card, L.id); wireNext(); return; }
+    Q = l2Make(deck.cur); missed = false; crashOn = false;
+    card.querySelector("#l2body").innerHTML =
+      '<div class="lvrow"><span class="lab">' + esc(Q.v) + "</span>" + listView(Q.before) + "</div>" +
+      '<p class="sub" style="margin:4px 0 0">This line runs next:</p><pre class="code">' + esc(Q.stmt) + "</pre>" +
+      (Q.printed ? '<div class="answer-row"><label for="l2out">What prints?</label><input id="l2out" spellcheck="false" autocomplete="off"></div>' : "") +
+      '<div class="answer-row"><label for="l2list">' + esc(Q.v) + ' after</label><input id="l2list" spellcheck="false" autocomplete="off" placeholder="like [' + esc(Q.before.slice(0, 2).join(", ")) + ', ...]"></div>' +
+      '<div class="btns"><button class="alt" id="l2crash" aria-pressed="false">It crashes</button><button class="go" id="l2go">Check</button></div>' +
+      '<div class="verdict" id="l2v"></div><div class="expl" id="l2x"></div><div id="l2after"></div><div class="btns" id="l2nx"></div>';
+    const cb = card.querySelector("#l2crash");
+    cb.onclick = () => { crashOn = !crashOn; cb.setAttribute("aria-pressed", crashOn); card.querySelectorAll("#l2body input").forEach((x) => (x.disabled = crashOn)); };
+    card.querySelector("#l2go").onclick = check;
+    card.querySelectorAll("#l2body input").forEach((x) => (x.onkeydown = (e) => { if (e.key === "Enter") check(); }));
+    (card.querySelector("#l2out") || card.querySelector("#l2list")).focus({ preventScroll: true });
+  }
+  function check() {
+    const vEl = card.querySelector("#l2v");
+    let ok, why = "";
+    if (Q.crash) {
+      ok = crashOn;
+      if (!ok) why = "That line crashes.";
+    } else if (crashOn) { ok = false; why = "That line runs fine. It does not crash."; }
+    else {
+      const got = parseListAnswer(card.querySelector("#l2list").value);
+      const listOk = sameList(got, Q.after);
+      let outOk = true;
+      if (Q.printed) outOk = normOut(card.querySelector("#l2out").value) === normOut(Q.out.join("\n"));
+      ok = listOk && outOk;
+      if (!got) why = "Type what " + Q.v + " looks like after the line runs.";
+      else if (!outOk && listOk) why = "The list is right. The printed value is not.";
+      else if (outOk && !listOk) why = Q.printed ? "The printed value is right. The list is not." : "";
+    }
+    if (!ok) missed = true;
+    vEl.className = "verdict " + (ok ? "yes" : "nope");
+    vEl.innerHTML = ok ? "CORRECT" + (missed && deck.cur ? "" : "") + "." : "NOT QUITE - " + why;
+    const ans = Q.crash
+      ? "It crashes with <code>" + esc(Q.crash.message) + "</code>. The list does not change."
+      : (Q.printed ? "Prints <code>" + esc(Q.out.join(" ")) + "</code>. " : "") + "The list ends up " + esc(listLit(Q.after)) + ".";
+    card.querySelector("#l2x").innerHTML = Q.rule + "<br>" + ans;
+    card.querySelector("#l2after").innerHTML = Q.crash ? "" : '<div class="lvrow"><span class="lab">after</span>' + listView(Q.after, Q.changed) + "</div>";
+    if (!ok) {
+      card.querySelector("#l2nx").innerHTML = '<button class="go" id="l2next">Try another like it</button>';
+      deck.again();
+    } else {
+      deck.clear();
+      card.querySelector("#l2nx").innerHTML = '<button class="go" id="l2next">Next</button>';
+    }
+    card.querySelector("#l2go").disabled = true; card.querySelector("#l2crash").disabled = true;
+    card.querySelectorAll("#l2body input").forEach((x) => (x.disabled = true));
+    card.querySelector("#l2next").onclick = ask; card.querySelector("#l2next").focus({ preventScroll: true });
+  }
+  card.innerHTML = "<h2>" + L.title + '</h2><p class="sub">Figure out what the line does before you check. Type lists like <code>[Zain, Ava, Kai]</code>. If the line throws an exception, click <b>It crashes</b>. Each method has to be right once. Miss one and it comes back later.</p><div id="l2prog"></div><div id="l2body"></div>';
+  ask();
+}
+
+/* =====================================================================
+   Level 3: write the call
+   ===================================================================== */
+function l3Make(kind) {
+  const n = randInt(3, 5); const items = sample(NAMES, n); const v = "names";
+  const setup = "ArrayList<String> names = new ArrayList<String>();\n" + items.map((x) => "names.add(" + q(x) + ");").join("\n");
+  const others = NAMES.filter((x) => !items.includes(x)); const x = pick(others);
+  let goal, after = items.slice(), out = null, needVar = null, hint;
+  const i = randInt(0, n - 1);
+  switch (kind) {
+    case "addEnd": goal = "Add <b>" + x + "</b> to the end."; after.push(x); hint = "add(value) puts it at the end."; break;
+    case "addAt": { const j = randInt(0, n - 1); goal = j === 0 ? "Put <b>" + x + "</b> at the front." : "Insert <b>" + x + "</b> so it ends up at index " + j + "."; after.splice(j, 0, x); hint = "add(index, value) inserts and slides the rest right."; break; }
+    case "set": goal = "Replace <b>" + items[i] + "</b> with <b>" + x + "</b>."; after[i] = x; hint = "set(index, value) replaces. add would make the list longer."; break;
+    case "remove": goal = "Remove <b>" + items[i] + "</b>."; after.splice(i, 1); hint = "remove(index) takes out that slot."; break;
+    case "removeLast": goal = "Remove the last name. Write it so it works no matter how long the list is."; after.pop(); hint = "The last index is names.size() - 1."; break;
+    case "printGet": goal = "Print the name at index " + i + "."; out = [items[i]]; hint = "System.out.println(names.get(...))"; break;
+    case "printSize": goal = "Print how many names are in the list."; out = [String(n)]; hint = "size() is a method."; break;
+    case "storeRemoved": goal = "Remove <b>" + items[i] + "</b> and save it in a new String variable called <code>gone</code>."; after.splice(i, 1); needVar = items[i]; hint = "remove gives back what it took out, so you can store it: String gone = ..."; break;
+  }
+  return { kind, v, setup, items, after, out, needVar, goal, hint, i };
+}
+function l3Check(Q, ans) {
+  const { m, err } = runAnswer(Q.setup, ans);
+  if (err) return { ok: false, err, m };
+  const got = m.listStrs("names");
+  if (!got) return { ok: false, msg: "NOT QUITE - <code>names</code> does not point at the list anymore.", m };
+  const notes = [];
+  if (m.notes.includes("removeObject")) notes.push("remove(\"" + "name\") works in real Java, but the AP exam only uses remove(index). Practice with the index.");
+  if (Q.kind === "removeLast" && !/size\s*\(\s*\)/.test(ans)) {
+    if (sameList(got, Q.after)) return { ok: false, msg: "NOT QUITE - that works for this list, but not for a list of any length. Use <code>names.size() - 1</code> for the last index.", m, got };
+  }
+  if (!sameList(got, Q.after)) {
+    let msg = "NOT QUITE - you got " + esc(listLit(got)) + ".";
+    if (got.length > Q.after.length) msg += " Your list got longer than it should." + (Q.kind === "set" ? " add makes a new slot. set replaces what is already there." : "");
+    else if (got.length < Q.after.length) msg += " Your list got shorter than it should.";
+    else if (Q.kind === "addAt" || Q.kind === "addEnd") msg += " Nothing was added. set replaces. add puts in a new slot.";
+    else msg += " Right size, wrong spot. Indexes start at 0.";
+    return { ok: false, msg, m, got };
+  }
+  if (Q.out) {
+    const o = m.out.join("\n");
+    if (normOut(o) !== normOut(Q.out.join("\n"))) return { ok: false, msg: o ? "NOT QUITE - that printed <code>" + esc(o) + "</code>. It should print " + esc(Q.out.join(" ")) + "." : "NOT QUITE - nothing printed. Wrap it in <code>System.out.println( )</code>.", m, got };
+  }
+  if (Q.needVar) {
+    const g = m.vars.get("gone");
+    if (!g) return { ok: false, msg: "NOT QUITE - the list is right, but I do not see a variable called <code>gone</code>. remove gives back what it took out, so store it.", m, got };
+    if (g.type !== "String") return { ok: false, msg: "NOT QUITE - <code>gone</code> should be a String.", m, got };
+    if (!g.init || m.toStr(g.val) !== Q.needVar) return { ok: false, msg: "NOT QUITE - <code>gone</code> holds " + esc(m.toStr(g.val)) + ".", m, got };
+  }
+  return { ok: true, m, got, notes };
+}
+function l3(card, L) {
+  const deck = new Deck(["addEnd", "addAt", "set", "remove", "removeLast", "printGet", "printSize", "storeRemoved"]);
+  let Q, missed;
+  function ask() {
+    card.querySelector("#l3prog").innerHTML = progHTML(deck.cleared, deck.kinds.length, "Cleared");
+    if (deck.finished) { levelDone(L.id); card.querySelector("#l3body").innerHTML = nextLevelBtn(card, L.id); wireNext(); return; }
+    Q = l3Make(deck.cur); missed = false;
+    card.querySelector("#l3body").innerHTML =
+      '<div class="lvrow"><span class="lab">names</span>' + listView(Q.items) + "</div>" +
+      '<p class="prompt">' + Q.goal + "</p>" +
+      (Q.out ? "" : '<div class="lvrow"><span class="lab">goal</span>' + listView(Q.after) + "</div>") +
+      '<div class="answer-row"><input id="l3in" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="names...."><button class="go" id="l3go">Check</button></div>' +
+      '<div class="verdict" id="l3v"></div><div class="caret" id="l3c"></div><div class="expl" id="l3x"></div><div id="l3got"></div><div class="btns" id="l3nx"></div>';
+    const inp = card.querySelector("#l3in"); inp.focus({ preventScroll: true });
+    const go = () => check(inp.value);
+    card.querySelector("#l3go").onclick = go; inp.onkeydown = (e) => { if (e.key === "Enter") go(); };
+  }
+  function check(ans) {
+    const r = l3Check(Q, ans);
+    const vEl = card.querySelector("#l3v"), cEl = card.querySelector("#l3c"); cEl.textContent = "";
+    card.querySelector("#l3got").innerHTML = r.got ? '<div class="lvrow"><span class="lab">yours</span>' + listView(r.got) + "</div>" : "";
+    if (r.m && r.m.out.length) card.querySelector("#l3got").innerHTML += '<div class="console"><span class="lbl">Console</span>' + esc(r.m.out.join("\n")) + "</div>";
+    if (r.err) { showErr(vEl, cEl, r.err, ans); missed = true; card.querySelector("#l3x").innerHTML = "Hint: " + esc(Q.hint); return; }
+    if (!r.ok) { vEl.className = "verdict nope"; vEl.innerHTML = r.msg; missed = true; card.querySelector("#l3x").innerHTML = "Hint: " + esc(Q.hint); return; }
+    vEl.className = "verdict yes"; vEl.innerHTML = "CORRECT" + (missed ? " - you will get one more like this before the level clears." : ".");
+    card.querySelector("#l3x").innerHTML = r.notes.map(esc).join(" ");
+    if (missed) deck.again(); else deck.clear();
+    card.querySelector("#l3in").disabled = true; card.querySelector("#l3go").disabled = true;
+    card.querySelector("#l3nx").innerHTML = '<button class="go" id="l3next">Next</button>';
+    card.querySelector("#l3next").onclick = ask; card.querySelector("#l3next").focus({ preventScroll: true });
+  }
+  card.innerHTML = "<h2>" + L.title + '</h2><p class="sub">Write the line of Java that does it. Your code really runs on the list, so you see exactly what it did.</p><div id="l3prog"></div><div id="l3body"></div>';
+  ask();
+}
+
+/* =====================================================================
+   Level 4: Random
+   ===================================================================== */
+function l4MC() {
+  const n = randInt(4, 9), k = randInt(4, 7);
+  return shuffle([
+    { code: "Random rand = new Random();\nint x = rand.nextInt(" + n + ");", q: "What values can <code>x</code> be?", opts: ["0 to " + (n - 1), "0 to " + n, "1 to " + n, "1 to " + (n - 1)], a: 0, ex: "<code>nextInt(" + n + ")</code> gives " + n + " different numbers, starting at 0. So 0 to " + (n - 1) + ". It never gives " + n + "." },
+    { code: "Random rand = new Random();\nint roll = rand.nextInt(" + n + ") + 1;", q: "What values can <code>roll</code> be?", opts: ["1 to " + n, "0 to " + n, "1 to " + (n + 1), "0 to " + (n - 1)], a: 0, ex: "<code>nextInt(" + n + ")</code> is 0 to " + (n - 1) + ". Adding 1 slides it to 1 to " + n + "." },
+    { code: "// list has " + k + " items\nint i = rand.nextInt(list.size());", q: "What values can <code>i</code> be?", opts: ["0 to " + (k - 1) + ": every index in the list", "0 to " + k, "1 to " + k, "1 to " + (k - 1)], a: 0, ex: "<code>list.size()</code> is " + k + ", so <code>nextInt(" + k + ")</code> gives 0 to " + (k - 1) + ". Those are exactly the indexes of the list. That is why you do not need any +1 or -1." },
+  ]);
+}
+function l4Run(ans, size, trials) {
+  let src = ans.trim().replace(/;\s*$/, "");
+  const dm = /^\s*[A-Za-z_][\w<>]*\s+[A-Za-z_]\w*\s*=\s*([\s\S]+)$/.exec(src); if (dm) src = dm[1];
+  const pm = /^System\.out\.println\s*\(([\s\S]*)\)$/.exec(src); if (pm) src = pm[1];
+  const songs = SONGS.slice(0, size);
+  const setup = "ArrayList<String> songs = new ArrayList<String>();\n" + songs.map((s) => "songs.add(" + q(s) + ");").join("\n") + "\nRandom rand = new Random();";
+  const m = new Machine(); m.run(setup);
+  let expr;
+  try { const p = new Parser(src); expr = p.expr(); if (p.peek().t !== "eof") throw syn("unexpected " + p.peek().v, p.peek().c); }
+  catch (err) { if (err instanceof JErr) return { err, src }; throw err; }
+  const lst = m.list("songs");
+  const counts = new Array(size).fill(0); let crashes = 0, firstCrash = null, type = null, sampleVal = null;
+  for (let t = 0; t < trials; t++) {
+    try {
+      const r = m.eval(expr); type = r.type;
+      if (r.type !== "String") { sampleVal = m.toStr(r.val); break; }
+      const idx = lst.items.findIndex((x) => x.k === "ref" && r.val.k === "ref" && x.id === r.val.id);
+      if (idx >= 0) counts[idx]++;
+    } catch (err) {
+      if (!(err instanceof JErr)) throw err;
+      if (err.kind !== "runtime") return { err, src };
+      crashes++; if (!firstCrash) firstCrash = err;
+    }
+  }
+  return { counts, crashes, firstCrash, type, sampleVal, songs, src };
+}
+function barsHTML(r, trials) {
+  const max = Math.max(1, ...r.counts);
+  return '<div class="bars">' + r.counts.map((c) => '<div class="b' + (c === 0 ? " zero" : "") + '"><span>' + c + '</span><i style="height:' + (c === 0 ? 2 : Math.max(4, Math.round(100 * c / max))) + '%"></i></div>').join("") +
+    (r.crashes ? '<div class="b bad"><span>' + r.crashes + '</span><i style="height:' + Math.max(4, Math.round(100 * r.crashes / max)) + '%"></i></div>' : "") + "</div>" +
+    '<div class="barlab">' + r.songs.map((s, i) => "<span>" + i + "<br>" + esc(s) + "</span>").join("") + (r.crashes ? '<span style="color:#c0392b">crash</span>' : "") + "</div>";
+}
+function l4Judge(ans) {
+  const T = 400;
+  const a = l4Run(ans, 4, T);
+  if (a.err) return { ok: false, err: a.err, src: a.src };
+  if (a.type && a.type !== "String") return { ok: false, msg: a.type === "int" ? "NOT QUITE - that gives you an index (a number like " + esc(a.sampleVal) + "), not a song. Wrap it in <code>songs.get( )</code>." : "NOT QUITE - that gives a " + esc(a.type) + ", not a song from the list.", a };
+  const b = l4Run(ans, 6, T);
+  let msg = null;
+  const zeroA = a.counts.map((c, i) => (c === 0 ? i : -1)).filter((i) => i >= 0);
+  if (a.crashes) msg = "NOT QUITE - it crashed " + a.crashes + " times out of " + T + ": <code>" + esc(a.firstCrash.message) + "</code>. <code>nextInt(songs.size())</code> already stops at the last index. Adding 1 goes one past the end.";
+  else if (zeroA.length === a.counts.length) msg = "NOT QUITE - none of the songs ever came up.";
+  else if (zeroA.length === 1 && zeroA[0] === 3) msg = "NOT QUITE - the last song never came up. <code>nextInt(n)</code> already stops at n - 1, so you do not need the -1.";
+  else if (zeroA.length === 1 && zeroA[0] === 0) msg = "NOT QUITE - the first song, index 0, never came up.";
+  else if (zeroA.length) msg = "NOT QUITE - some songs never came up: index " + zeroA.join(", ") + ".";
+  else if (b.crashes) msg = "NOT QUITE - it works for 4 songs, but when the list grows to 6 it crashes. Use <code>songs.size()</code>, not a number.";
+  else if (b.counts.some((c) => c === 0)) msg = "NOT QUITE - it works for 4 songs, but when the list grows to 6, the new songs never come up. Use <code>songs.size()</code> instead of a number, so it keeps working when the list changes.";
+  return { ok: !msg, msg, a, b };
+}
+function l4(card, L) {
+  let mcs = l4MC(), mi = 0, mcCleared = 0, wrote = false;
+  const total = 4;
+  function prog() { card.querySelector("#l4prog").innerHTML = progHTML(mcCleared + (wrote ? 1 : 0), total, "Cleared"); }
+  function askMC() {
+    prog();
+    if (mcCleared >= 3) return askWrite();
+    const Q = mcs[mi % mcs.length];
+    const order = shuffle(Q.opts.map((o, i) => i));
+    card.querySelector("#l4body").innerHTML = '<p class="sub" style="margin-bottom:4px"><b>Quick review of Random.</b> One Random object, as many <code>nextInt</code> calls as you want.</p><pre class="code">' + esc(Q.code) + '</pre><p class="prompt">' + Q.q + '</p><div class="opts">' +
+      order.map((i) => '<button data-i="' + i + '">' + esc(Q.opts[i]) + "</button>").join("") + '</div><div class="verdict" id="l4v"></div><div class="expl" id="l4x"></div><div class="btns" id="l4nx"></div>';
+    card.querySelectorAll(".opts button").forEach((b) => (b.onclick = () => {
+      const i = +b.dataset.i, ok = i === Q.a;
+      card.querySelectorAll(".opts button").forEach((x) => { x.disabled = true; if (+x.dataset.i === Q.a) x.classList.add("right"); });
+      if (!ok) b.classList.add("wrong");
+      card.querySelector("#l4v").className = "verdict " + (ok ? "yes" : "nope");
+      card.querySelector("#l4v").textContent = ok ? "CORRECT." : "NOT QUITE.";
+      card.querySelector("#l4x").innerHTML = Q.ex;
+      if (ok) { mcCleared++; mi++; } else { mcs = l4MC(); }
+      card.querySelector("#l4nx").innerHTML = '<button class="go" id="l4next">' + (ok ? "Next" : "Try another") + "</button>";
+      card.querySelector("#l4next").onclick = askMC; prog();
+    }));
+  }
+  function askWrite() {
+    prog();
+    card.querySelector("#l4body").innerHTML =
+      '<p class="prompt">Now use it. Write an expression that picks a random song from <code>songs</code>.</p>' +
+      '<pre class="code">ArrayList&lt;String&gt; songs = new ArrayList&lt;String&gt;();  // Ivy, Golden, Levitate, Runaway\nRandom rand = new Random();</pre>' +
+      '<p class="sub">Type just the expression, like <code>songs.get(...)</code>. You can also type a whole line, like <code>String pick = ...;</code>. It runs ' + 400 + ' times on 4 songs. Then the list grows to 6 songs and it runs ' + 400 + ' more times.</p>' +
+      '<div class="answer-row"><input id="l4in" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="songs.get(...)"><button class="go" id="l4go">Run it</button></div>' +
+      '<div class="verdict" id="l4v"></div><div class="caret" id="l4c"></div><div id="l4bars"></div><div class="btns" id="l4nx"></div>';
+    const inp = card.querySelector("#l4in"); inp.focus({ preventScroll: true });
+    const go = () => {
+      const r = l4Judge(inp.value);
+      const vEl = card.querySelector("#l4v"), cEl = card.querySelector("#l4c"); cEl.textContent = "";
+      let bars = "";
+      if (r.a && r.a.counts) bars += '<div class="round"><h3>4 songs, 400 picks</h3>' + barsHTML(r.a, 400) + "</div>";
+      if (r.b && r.b.counts) bars += '<div class="round"><h3>6 songs, 400 picks</h3>' + barsHTML(r.b, 400) + "</div>";
+      card.querySelector("#l4bars").innerHTML = bars;
+      if (r.err) { showErr(vEl, cEl, r.err, r.src); return; }
+      vEl.className = "verdict " + (r.ok ? "yes" : "nope");
+      vEl.innerHTML = r.ok ? "CORRECT - every song came up, nothing crashed, and it still works when the list grows." : r.msg;
+      if (r.ok) { wrote = true; prog(); levelDone(L.id); card.querySelector("#l4nx").innerHTML = nextLevelBtn(card, L.id); wireNext(); }
+    };
+    card.querySelector("#l4go").onclick = go; inp.onkeydown = (e) => { if (e.key === "Enter") go(); };
+  }
+  card.innerHTML = "<h2>" + L.title + '</h2><p class="sub">Three quick questions on <code>Random</code>, then use it to pull a random item out of an ArrayList.</p><div id="l4prog"></div><div id="l4body"></div>';
+  askMC();
+}
+
+/* =====================================================================
+   Level 5: reference or object
+   ===================================================================== */
+const L5_QS = [
+  { code: 'Name best = new Name("Zain", "Ali", "Khan");', q: "Which part makes the object?", opts: ["<code>Name best</code>", '<code>new Name("Zain", "Ali", "Khan")</code>', "<code>best</code>", "The semicolon"], a: 1,
+    ex: "<code>new</code> is what makes an object on the heap. <code>Name best</code> only makes the reference." },
+  { code: 'Name best = new Name("Zain", "Ali", "Khan");', q: "What is stored in <code>best</code>?", opts: ["The three Strings: Zain, Ali, Khan", "A reference: where the Name object is on the heap", "A copy of the Name object", "Nothing until you print it"], a: 1,
+    ex: "<code>best</code> holds a reference, the arrow. The Strings live inside the object on the heap." },
+  { code: "ArrayList<Name> friends;", q: "How many objects does this line make?", opts: ["0", "1", "2"], a: 0,
+    ex: "No <code>new</code>, no object. It is a reference with nothing to point at yet." },
+  { code: 'ArrayList<Name> friends = new ArrayList<Name>();\nName a = new Name("Maria", "Elena", "Lopez");\nfriends.add(a);\nfriends.add(a);', q: "How many <code>Name</code> objects are on the heap?", opts: ["1", "2", "3"], a: 0,
+    ex: "<code>add</code> copies the reference, not the object. Both slots point at the same Name. Count the boxes, not the arrows." },
+  { code: 'ArrayList<String> songs = new ArrayList<String>();\nArrayList<String> mix = songs;\nmix.add("Ivy");\nSystem.out.println(songs.size());', q: "What prints?", opts: ["0", "1", "It crashes"], a: 1,
+    ex: "<code>mix = songs</code> copies the reference. There is only one ArrayList, and both variables point at it. Adding through <code>mix</code> changes the list <code>songs</code> sees." },
+  { code: 'ArrayList<Name> friends = new ArrayList<Name>();\nfriends.add(new Name("Kai", "Jin", "Park"));\nName first = friends.get(0);\nfirst = new Name("Ava", "Rose", "Diaz");\nSystem.out.println(friends.get(0).fullName());', q: "What prints?", opts: ["Kai Jin Park", "Ava Rose Diaz", "It crashes"], a: 0,
+    ex: "<code>first = new Name(...)</code> points <code>first</code> at a brand new object. The list still points at Kai." },
+  { code: 'Name best = new Name("Omar", "Ali", "Said");\nArrayList<Name> friends = new ArrayList<Name>();\nfriends.add(best);\nfriends.remove(0);', q: "After <code>remove(0)</code>, what happens to the Omar object?", opts: ["It is deleted because it left the list", "It is still there because best still points at it", "best is now null"], a: 1,
+    ex: "remove took the reference out of the list. The object stays as long as something still points at it, and <code>best</code> does." },
+  { code: 'Name best = new Name("Lena", "Mae", "Cruz");\nSystem.out.println(best);', q: "What prints?", opts: ["Lena Mae Cruz", "Name@ and then some letters and numbers", "best", "It crashes"], a: 1,
+    ex: "Our <code>Name</code> class has no toString, so Java prints the class name and a hash code. To see the name, call <code>best.fullName()</code>." },
+  { code: "ArrayList<Name> friends = new ArrayList<Name>();\nint count = friends.size();", q: "What is in the <code>count</code> box on the stack?", opts: ["0, the number itself", "A reference to the ArrayList", "A reference to a number on the heap"], a: 0,
+    ex: "<code>int</code> is a primitive. The value sits right in the box. Only objects get arrows." },
+  { code: "ArrayList<Name> friends = new ArrayList<Name>();\nfriends = new ArrayList<Name>();", q: "How many ArrayList objects were made, and how many can you still reach?", opts: ["2 made, 1 you can reach", "1 made, 1 you can reach", "2 made, 2 you can reach"], a: 0,
+    ex: "Two <code>new</code>s, two objects. <code>friends</code> now points at the second one. The first has no arrows left, so it is garbage." },
+];
+function l5(card, L) {
+  const deck = new Deck(L5_QS.map((_, i) => i));
+  function ask() {
+    card.querySelector("#l5prog").innerHTML = progHTML(deck.cleared, deck.kinds.length, "Cleared");
+    if (deck.finished) { levelDone(L.id); card.querySelector("#l5body").innerHTML = nextLevelBtn(card, L.id); wireNext(); return; }
+    const Q = L5_QS[deck.cur];
+    const order = shuffle(Q.opts.map((o, i) => i));
+    card.querySelector("#l5body").innerHTML = '<pre class="code">' + esc(Q.code) + '</pre><p class="prompt">' + Q.q + '</p><div class="opts">' +
+      order.map((i) => '<button data-i="' + i + '">' + Q.opts[i] + "</button>").join("") + '</div><div class="verdict" id="l5v"></div><div class="expl" id="l5x"></div><div id="l5out"></div><div id="l5mem"></div><div class="btns" id="l5nx"></div>';
+    card.querySelectorAll(".opts button").forEach((b) => (b.onclick = () => {
+      const ok = +b.dataset.i === Q.a;
+      card.querySelectorAll(".opts button").forEach((x) => { x.disabled = true; if (+x.dataset.i === Q.a) x.classList.add("right"); });
+      if (!ok) b.classList.add("wrong");
+      card.querySelector("#l5v").className = "verdict " + (ok ? "yes" : "nope");
+      card.querySelector("#l5v").textContent = ok ? "CORRECT." : "NOT QUITE - it comes back later.";
+      card.querySelector("#l5x").innerHTML = Q.ex + " Here is the memory after the code runs:";
+      const m = memOf(Q.code);
+      if (m.out.length) card.querySelector("#l5out").innerHTML = '<div class="console"><span class="lbl">Console</span>' + esc(m.out.join("\n")) + "</div>";
+      renderMemory(card.querySelector("#l5mem"), m, { noAnim: false });
+      if (ok) deck.clear(); else deck.again();
+      card.querySelector("#l5nx").innerHTML = '<button class="go" id="l5next">Next</button>';
+      card.querySelector("#l5next").onclick = ask;
+    }));
+  }
+  card.innerHTML = "<h2>" + L.title + '</h2><p class="sub">The variable is the <b>reference</b>. What <code>new</code> makes is the <b>object</b>. After each answer you see the memory, so check your thinking against the arrows. Miss one and it comes back.</p><div id="l5prog"></div><div id="l5body"></div>';
+  ask();
+}
+
+/* =====================================================================
+   Level 6: mixed trace
+   ===================================================================== */
+function l6Make() {
+  const start = sample(NAMES, randInt(2, 3)); const pool = NAMES.filter((x) => !start.includes(x));
+  const lines = ["ArrayList<String> names = new ArrayList<String>();"];
+  start.forEach((x) => lines.push("names.add(" + q(x) + ");"));
+  let cur = start.slice(); const used = new Set(start);
+  const fresh = () => { const x = pool.find((p) => !used.has(p)); used.add(x); return x; };
+  const ops = shuffle(["addAt", "set", "remove", "get", "size", "add", "removePrint", "setPrint"]).slice(0, randInt(4, 5));
+  for (const op of ops) {
+    const n = cur.length;
+    if (op === "add") { const x = fresh(); lines.push("names.add(" + q(x) + ");"); cur.push(x); }
+    else if (op === "addAt") { const i = randInt(0, n); const x = fresh(); lines.push("names.add(" + i + ", " + q(x) + ");"); cur.splice(i, 0, x); }
+    else if (op === "set" && n) { const i = randInt(0, n - 1); const x = fresh(); lines.push("names.set(" + i + ", " + q(x) + ");"); cur[i] = x; }
+    else if (op === "setPrint" && n) { const i = randInt(0, n - 1); const x = fresh(); lines.push("System.out.println(names.set(" + i + ", " + q(x) + "));"); cur[i] = x; }
+    else if (op === "remove" && n > 1) { const i = randInt(0, n - 1); lines.push("names.remove(" + i + ");"); cur.splice(i, 1); }
+    else if (op === "removePrint" && n > 1) { const i = randInt(0, n - 1); lines.push("System.out.println(names.remove(" + i + "));"); cur.splice(i, 1); }
+    else if (op === "get" && n) { lines.push("System.out.println(names.get(" + randInt(0, n - 1) + "));"); }
+    else if (op === "size") lines.push("System.out.println(names.size());");
+  }
+  if (!lines.some((l) => /println/.test(l))) lines.push("System.out.println(names.size());");
+  const src = lines.join("\n");
+  const m = new Machine(); const stmts = new Parser(src).program(); const trace = [];
+  for (const s of stmts) { const before = m.out.length; m.exec(s); trace.push({ line: src.split("\n")[trace.length], list: m.listStrs("names"), out: m.out.slice(before).join(" ") }); }
+  return { src, out: m.out.slice(), after: m.listStrs("names"), trace };
+}
+function l6(card, L) {
+  let streak = 0; const need = 3; let Q;
+  function ask() {
+    card.querySelector("#l6prog").innerHTML = progHTML(Math.min(streak, need), need, "In a row");
+    if (streak >= need) { levelDone(L.id); card.querySelector("#l6body").innerHTML = nextLevelBtn(card, L.id); wireNext(); return; }
+    Q = l6Make();
+    card.querySelector("#l6body").innerHTML = '<pre class="code">' + esc(Q.src) + "</pre>" +
+      '<p class="sub" style="margin:0">What prints? One line per println.</p><textarea class="code-in" id="l6out" rows="' + Math.max(2, Q.out.length) + '" spellcheck="false"></textarea>' +
+      '<div class="answer-row"><label for="l6list">names at the end</label><input id="l6list" spellcheck="false" autocomplete="off" placeholder="[ ... ]"></div>' +
+      '<div class="btns"><button class="go" id="l6go">Check</button></div><div class="verdict" id="l6v"></div><div id="l6trace"></div><div class="btns" id="l6nx"></div>';
+    card.querySelector("#l6go").onclick = check;
+  }
+  function check() {
+    const outs = card.querySelector("#l6out").value.split("\n").map((s) => s.trim()).filter((s) => s !== "");
+    const outOk = outs.length === Q.out.length && outs.every((s, i) => normOut(s) === normOut(Q.out[i]));
+    const listOk = sameList(parseListAnswer(card.querySelector("#l6list").value), Q.after);
+    const ok = outOk && listOk;
+    const vEl = card.querySelector("#l6v");
+    vEl.className = "verdict " + (ok ? "yes" : "nope");
+    if (ok) { streak++; vEl.textContent = "CORRECT" + (streak < need ? " - " + streak + " in a row." : " - three in a row."); }
+    else { streak = 0; vEl.textContent = "NOT QUITE - " + (!outOk && !listOk ? "the output and the list are both off." : !outOk ? "the list is right, the output is not." : "the output is right, the list is not.") + " Your streak starts over. Walk through the trace below."; }
+    card.querySelector("#l6trace").innerHTML = '<table class="trace"><tr><th>Line</th><th>names after</th><th>Prints</th></tr>' +
+      Q.trace.map((t) => "<tr><td>" + esc(t.line) + "</td><td>" + esc(listLit(t.list)) + "</td><td>" + esc(t.out) + "</td></tr>").join("") + "</table>";
+    card.querySelector("#l6go").disabled = true;
+    card.querySelector("#l6nx").innerHTML = '<button class="go" id="l6next">Next</button>';
+    card.querySelector("#l6next").onclick = ask; card.querySelector("#l6next").focus({ preventScroll: true });
+    card.querySelector("#l6prog").innerHTML = progHTML(Math.min(streak, need), need, "In a row");
+  }
+  card.innerHTML = "<h2>" + L.title + '</h2><p class="sub">Everything together. Trace the whole thing on paper first. Get three in a row and you are ready to code it for real.</p><div id="l6prog"></div><div id="l6body"></div>';
+  ask();
+}
+
+/* =====================================================================
+   boot
+   ===================================================================== */
+$("levelNav").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) showLevel(+b.dataset.i); });
+labInit();
+{
+  const qs = new URLSearchParams(location.search);
+  const lv = qs.get("level"); showLevel(lv ? Math.min(5, Math.max(0, +lv - 1)) : Math.max(0, LEVELS.findIndex((L) => !done[L.id])));
+  const pr = qs.get("preset"); if (pr) { labEdit(); $("labCode").value = PRESETS[+pr][1]; $("labAll").click(); }
+}
+
+/* =====================================================================
+   self test: ?selftest
+   ===================================================================== */
+if (/[?&]selftest/.test(location.search)) {
+  const R = [];
+  const t = (name, fn) => { try { const r = fn(); R.push((r === true ? "ok   " : "FAIL ") + name + (r === true ? "" : "  -> " + r)); } catch (e) { R.push("FAIL " + name + "  -> threw " + e.message); } };
+  const errKind = (src) => { try { new Machine().run(src); return "none"; } catch (e) { return e instanceof JErr ? e.kind + ":" + e.message : "js:" + e.message; } };
+  const outOf = (src) => { const m = new Machine(); m.run(src); return m.out.join("|"); };
+  t("basic add/get", () => outOf('ArrayList<String> a = new ArrayList<String>(); a.add("x"); a.add("y"); System.out.println(a.get(1));') === "y" || "bad");
+  t("add at index", () => outOf('ArrayList<String> a = new ArrayList<>(); a.add("x"); a.add("y"); a.add(1, "z"); System.out.println(a);') === "[x, z, y]" || outOf('ArrayList<String> a = new ArrayList<>(); a.add("x"); a.add("y"); a.add(1, "z"); System.out.println(a);'));
+  t("set returns old", () => outOf('ArrayList<String> a = new ArrayList<String>(); a.add("x"); System.out.println(a.set(0, "q")); System.out.println(a);') === "x|[q]" || "bad");
+  t("remove returns item", () => outOf('ArrayList<String> a = new ArrayList<String>(); a.add("x"); a.add("y"); System.out.println(a.remove(0) + a.size());') === "y1".replace("y", "x") || outOf('ArrayList<String> a = new ArrayList<String>(); a.add("x"); a.add("y"); System.out.println(a.remove(0) + a.size());'));
+  t("Integer remove by index", () => outOf("ArrayList<Integer> a = new ArrayList<Integer>(); a.add(90); a.add(75); a.add(2); a.remove(2); System.out.println(a);") === "[90, 75]" || "bad");
+  t("oob get", () => /runtime:.*Index 2 out of bounds for length 2/.test(errKind('ArrayList<String> a = new ArrayList<String>(); a.add("x"); a.add("y"); a.get(2);')) || errKind('ArrayList<String> a = new ArrayList<String>(); a.add("x"); a.add("y"); a.get(2);'));
+  t("add at size ok", () => outOf('ArrayList<String> a = new ArrayList<String>(); a.add("x"); a.add(1, "y"); System.out.println(a);') === "[x, y]" || "bad");
+  t("add past size crashes", () => /runtime:.*Index: 3, Size: 1/.test(errKind('ArrayList<String> a = new ArrayList<String>(); a.add("x"); a.add(3, "y");')) || "bad");
+  t("ArrayList<int> rejected", () => /compile:.*Integer/.test(errKind("ArrayList<int> a = new ArrayList<int>();")) || errKind("ArrayList<int> a = new ArrayList<int>();"));
+  t("missing new", () => /compile:.*missing new/.test(errKind("ArrayList<String> a = ArrayList<String>();")) || errKind("ArrayList<String> a = ArrayList<String>();"));
+  t("missing parens after new", () => /syntax/.test(errKind("ArrayList<String> a = new ArrayList<String>;")) || "bad");
+  t("missing semicolon", () => /syntax:missing ;/.test(errKind("ArrayList<String> a = new ArrayList<String>()")) || errKind("ArrayList<String> a = new ArrayList<String>()"));
+  t("lowercase string", () => /Did you mean String/.test(errKind("ArrayList<string> a = new ArrayList<string>();")) || "bad");
+  t("wrong elem type add", () => /incompatible types: int cannot be converted to String/.test(errKind("ArrayList<String> a = new ArrayList<String>(); a.add(5);")) || errKind("ArrayList<String> a = new ArrayList<String>(); a.add(5);"));
+  t("mismatched generics", () => /incompatible types/.test(errKind("ArrayList<String> a = new ArrayList<Integer>();")) || "bad");
+  t("brackets rejected", () => /do not use \[ \]/.test(errKind('ArrayList<String> a = new ArrayList<String>(); a.add("x"); String s = a[0];')) || "bad");
+  t("length hint", () => /Use size/.test(errKind("ArrayList<String> a = new ArrayList<String>(); int n = a.length;")) && /Use size/.test(errKind("ArrayList<String> a = new ArrayList<String>(); int n = a.length();")) || "bad");
+  t("uninit use", () => /might not have been initialized/.test(errKind('ArrayList<String> a; a.add("x");')) || "bad");
+  t("null NPE", () => /NullPointerException/.test(errKind('ArrayList<String> a = null; a.add("x");')) || "bad");
+  t("redeclare", () => /already defined/.test(errKind("ArrayList<String> a; ArrayList<String> a = new ArrayList<String>();")) || "bad");
+  t("Name print hash", () => /^Name@[0-9a-f]+$/.test(outOf('Name n = new Name("lena","mae","cruz"); System.out.println(n);')) || "bad");
+  t("Name fullName casefix", () => outOf('Name n = new Name("lena","MAE","cruz"); System.out.println(n.fullName());') === "Lena Mae Cruz" || "bad");
+  t("alias size", () => outOf('ArrayList<String> s = new ArrayList<String>(); ArrayList<String> m = s; m.add("Ivy"); System.out.println(s.size());') === "1" || "bad");
+  t("gc after reassign", () => { const m = memOf("ArrayList<Name> f = new ArrayList<Name>(); f = new ArrayList<Name>();"); return [...m.heap.values()].filter((o) => o.gcAt).length === 1 || "bad"; });
+  t("same object twice", () => { const m = memOf('ArrayList<Name> f = new ArrayList<Name>(); Name a = new Name("a","b","c"); f.add(a); f.add(a);'); return [...m.heap.values()].filter((o) => o.cls === "Name").length === 1 || "bad"; });
+  t("all L5 code runs", () => { for (const Q of L5_QS) memOf(Q.code); return true; });
+  t("L5 answers agree with machine", () => {
+    const m4 = memOf(L5_QS[4].code); if (m4.out[0] !== "1") return "q4"; const m5 = memOf(L5_QS[5].code); if (m5.out[0] !== "Kai Jin Park") return "q5";
+    const m6 = memOf(L5_QS[6].code); if (![...m6.heap.values()].some((o) => o.cls === "Name" && !o.gcAt)) return "q6"; return true; });
+  // L1 checker
+  const L1c = (Q, a) => l1Check(Q, a).ok;
+  t("L1 full correct", () => L1c({ kind: "full", ty: L1_TYPES[0], v: "cities", setup: "" }, "ArrayList<String> cities = new ArrayList<String>();") || "bad");
+  t("L1 full diamond", () => L1c({ kind: "full", ty: L1_TYPES[2], v: "scores", setup: "" }, "ArrayList<Integer> scores = new ArrayList<>();") || "bad");
+  t("L1 full ref only rejected", () => !L1c({ kind: "full", ty: L1_TYPES[0], v: "cities", setup: "" }, "ArrayList<String> cities;") || "bad");
+  t("L1 ref correct", () => L1c({ kind: "ref", ty: L1_TYPES[1], v: "team", setup: "" }, "ArrayList<Name> team;") || "bad");
+  t("L1 ref with object rejected", () => !L1c({ kind: "ref", ty: L1_TYPES[1], v: "team", setup: "" }, "ArrayList<Name> team = new ArrayList<Name>();") || "bad");
+  t("L1 obj correct", () => L1c({ kind: "obj", ty: L1_TYPES[1], v: "team", setup: "ArrayList<Name> team;" }, "team = new ArrayList<Name>();") || "bad");
+  t("L1 obj redeclare rejected", () => !L1c({ kind: "obj", ty: L1_TYPES[1], v: "team", setup: "ArrayList<Name> team;" }, "ArrayList<Name> team = new ArrayList<Name>();") || "bad");
+  t("L1 name correct", () => L1c({ kind: "name", v: "best", f: "Zain", l: "Ali", setup: "" }, 'Name best = new Name("Zain", "Ali");') || "bad");
+  t("L1 name swapped rejected", () => !L1c({ kind: "name", v: "best", f: "Zain", l: "Ali", setup: "" }, 'Name best = new Name("Ali", "Zain");') || "bad");
+  t("L1 random", () => L1c({ kind: "random", v: "rand", setup: "" }, "Random rand = new Random();") || "bad");
+  // L2 generator sanity
+  t("L2 generators", () => { for (let k = 0; k < 300; k++) { const kind = pick(["add", "addAt", "get", "set", "remove", "size", "oob"]); const Q = l2Make(kind); if (kind === "oob" && !Q.crash) return "oob no crash: " + Q.stmt; if (kind !== "oob" && Q.crash) return "unexpected crash " + Q.stmt; } return true; });
+  // L3 checker
+  t("L3 solutions", () => {
+    for (let k = 0; k < 200; k++) {
+      const kind = pick(["addEnd", "addAt", "set", "remove", "removeLast", "printGet", "printSize", "storeRemoved"]); const Q = l3Make(kind);
+      const idxAdd = Q.after.findIndex((x, i) => x !== Q.items[i]);
+      const sol = { addEnd: 'names.add("' + Q.after[Q.after.length - 1] + '");', addAt: "names.add(" + idxAdd + ', "' + Q.after[idxAdd] + '");', set: "names.set(" + Q.i + ', "' + Q.after[Q.i] + '");', remove: "names.remove(" + Q.i + ");",
+        removeLast: "names.remove(names.size() - 1);", printGet: "System.out.println(names.get(" + Q.i + "));", printSize: "System.out.println(names.size());", storeRemoved: "String gone = names.remove(" + Q.i + ");" }[kind];
+      const r = l3Check(Q, sol); if (!r.ok) return kind + " " + sol + " " + (r.msg || (r.err && r.err.message));
+    }
+    return true;
+  });
+  t("L3 set-vs-add caught", () => { const Q = l3Make("set"); return !l3Check(Q, "names.add(" + Q.i + ', "Zzz");').ok || "bad"; });
+  t("L3 removeLast literal rejected", () => { const Q = l3Make("removeLast"); return !l3Check(Q, "names.remove(" + (Q.items.length - 1) + ");").ok || "bad"; });
+  // L4 judge
+  t("L4 correct", () => l4Judge("songs.get(rand.nextInt(songs.size()))").ok || "bad");
+  t("L4 Math.random correct", () => l4Judge("songs.get((int)(Math.random() * songs.size()))").ok || "bad");
+  t("L4 full line ok", () => l4Judge("String pick = songs.get(rand.nextInt(songs.size()));").ok || "bad");
+  t("L4 minus one caught", () => /last song never/.test(l4Judge("songs.get(rand.nextInt(songs.size() - 1))").msg) || "bad");
+  t("L4 plus one caught", () => /crashed/.test(l4Judge("songs.get(rand.nextInt(songs.size()) + 1)").msg) || l4Judge("songs.get(rand.nextInt(songs.size()) + 1)").msg);
+  t("L4 hardcoded caught", () => /grows to 6/.test(l4Judge("songs.get(rand.nextInt(4))").msg) || "bad");
+  t("L4 index only caught", () => /index/.test(l4Judge("rand.nextInt(songs.size())").msg) || "bad");
+  t("L4 cast trap caught", () => !l4Judge("songs.get((int)Math.random() * songs.size())").ok || "bad");
+  // L6 generator
+  t("L6 generator", () => { for (let k = 0; k < 200; k++) { const Q = l6Make(); if (!Q.out.length) return "no output"; } return true; });
+  // render
+  t("render memory", () => { const d = document.createElement("div"); document.body.appendChild(d); PRESETS.forEach((p) => renderMemory(d, memOf(p[1]))); d.remove(); return true; });
+  const fails = R.filter((x) => x.startsWith("FAIL"));
+  $("selftestCard").hidden = false;
+  $("selftest").textContent = (fails.length ? fails.length + " FAILED" : "ALL PASS") + "\n" + R.join("\n");
+}
+</script>
+</body>
+</html>
